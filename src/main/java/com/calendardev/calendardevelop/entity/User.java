@@ -1,7 +1,9 @@
 package com.calendardev.calendardevelop.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "user")
 public class User extends BaseEntity {
