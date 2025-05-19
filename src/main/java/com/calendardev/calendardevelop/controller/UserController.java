@@ -1,7 +1,9 @@
 package com.calendardev.calendardevelop.controller;
 
-import com.calendardev.calendardevelop.dto.SignUpResponseDto;
+import com.calendardev.calendardevelop.dto.LoginRequestDto;
+import com.calendardev.calendardevelop.dto.LoginResponseDto;
 import com.calendardev.calendardevelop.dto.SignUpRequestDto;
+import com.calendardev.calendardevelop.dto.SignUpResponseDto;
 import com.calendardev.calendardevelop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,5 +25,12 @@ public class UserController {
         SignUpResponseDto signUpResponseDto = userService.signUp(requestDto);
 
         return new ResponseEntity<>(signUpResponseDto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto){
+
+        LoginResponseDto loginResponseDto = userService.login(requestDto);
+        return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
     }
 }

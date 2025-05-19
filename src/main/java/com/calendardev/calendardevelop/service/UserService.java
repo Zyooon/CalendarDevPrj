@@ -1,5 +1,7 @@
 package com.calendardev.calendardevelop.service;
 
+import com.calendardev.calendardevelop.dto.LoginRequestDto;
+import com.calendardev.calendardevelop.dto.LoginResponseDto;
 import com.calendardev.calendardevelop.dto.SignUpRequestDto;
 import com.calendardev.calendardevelop.dto.SignUpResponseDto;
 import com.calendardev.calendardevelop.entity.User;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
 
         User user = new User(requestDto.getUsername(), requestDto.getEmail(), requestDto.getPassword());
@@ -19,5 +22,17 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         return new SignUpResponseDto(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
+    }
+
+    public LoginResponseDto login(LoginRequestDto requestDto) {
+
+        User user = userRepository.findByEmail(requestDto.getEmail());
+
+        if(!requestDto.getPassword().equals(user.getPassword())){
+            return null;
+        }
+
+
+        return new LoginResponseDto(user.getId());
     }
 }
