@@ -37,4 +37,8 @@ public class BoardController {
         return new ResponseEntity<>(board, HttpStatus.OK);
     }
 
+//    @PatchMapping("update/{id}")
+//    public ResponseEntity<Void> updateOneboard(@PathVariable Long id,
+//                                               @RequestBody )
+
 }

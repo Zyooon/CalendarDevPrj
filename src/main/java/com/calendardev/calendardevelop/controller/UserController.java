@@ -1,11 +1,17 @@
 package com.calendardev.calendardevelop.controller;
 
+import com.calendardev.calendardevelop.common.Const;
 import com.calendardev.calendardevelop.dto.user.*;
 import com.calendardev.calendardevelop.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/calendar/users")
@@ -48,10 +54,39 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto){
+    public ResponseEntity<Void> login(@RequestBody LoginRequestDto requestDto,
+                                                  HttpServletRequest httpServletRequest){
+
+        if(httpServletRequest.getSession(false) != null){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 로그인된 사용자입니다.");
+        }
 
         LoginResponseDto loginResponseDto = userService.login(requestDto);
-        return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
+
+        HttpSession session = httpServletRequest.getSession();
+
+        UserInfoReponseDto loginUser = userService.showOneUser(loginResponseDto.getId());
+
+        session.setAttribute(Const.LOGIN_USER, loginUser);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response){
+        HttpSession session = request.getSession(false);
+
+        if(session != null){
+            session.invalidate();
+
+            // postman 에서는 서버에서 자체적으로 쿠키(JSESSIONID)를 계속 보냄
+            Cookie cookie = new Cookie("JSESSIONID", null);
+            cookie.setPath("/");
+            cookie.setMaxAge(0); // 즉시 만료
+            response.addCookie(cookie);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
