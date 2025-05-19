@@ -65,9 +65,7 @@ public class UserController {
 
         HttpSession session = httpServletRequest.getSession();
 
-        UserInfoReponseDto loginUser = userService.showOneUser(loginResponseDto.getId());
-
-        session.setAttribute(Const.LOGIN_USER, loginUser);
+        session.setAttribute(Const.USER_ID, loginResponseDto.getId());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

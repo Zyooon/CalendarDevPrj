@@ -48,18 +48,19 @@ public class UserService {
     @Transactional
     public void updateOneUser(Long id, UpdateUserRequestDto requestDto) {
 
-        Optional<User> findUser = userRepository.findById(id);
+        User findUser = userRepository.findById(id)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
 
-        if(!findUser.get().getPassword().equals(requestDto.getOldPassword())){
+        if(!findUser.getPassword().equals(requestDto.getOldPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
         if(requestDto.getUsername() != null && !requestDto.getUsername().isEmpty()){
-            findUser.get().updateUsername(requestDto.getUsername());
+            findUser.updateUsername(requestDto.getUsername());
         }
 
         if(requestDto.getNewPassword() != null && !requestDto.getNewPassword().isEmpty()){
-            findUser.get().updatePassword(requestDto.getNewPassword());
+            findUser.updatePassword(requestDto.getNewPassword());
         }
 
     }

@@ -2,10 +2,12 @@ package com.calendardev.calendardevelop.service;
 
 import com.calendardev.calendardevelop.dto.board.BoardRequestDto;
 import com.calendardev.calendardevelop.dto.board.BoardResponseDto;
+import com.calendardev.calendardevelop.dto.board.BoardUpdateRequestDto;
 import com.calendardev.calendardevelop.entity.Board;
 import com.calendardev.calendardevelop.entity.User;
 import com.calendardev.calendardevelop.repository.BoardRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -46,5 +48,25 @@ public class BoardService {
         Board findBoard = boardRepository.findById(id).
                 orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
         return new BoardResponseDto(findBoard);
+    }
+
+    @Transactional
+    public void updateBoard(Long id, Long userId, BoardUpdateRequestDto requestDto) {
+
+        Board findBoard = boardRepository.findById(id)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
+
+        if(!findBoard.getUser().getId().equals(userId)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 사용자의 일정이 아닙니다.");
+        }
+
+        if(requestDto.getTitle() != null && !requestDto.getTitle().isEmpty()){
+            findBoard.updateTitle(requestDto.getTitle());
+        }
+
+        if(requestDto.getContents() != null && !requestDto.getContents().isEmpty()){
+            findBoard.updateContents(requestDto.getContents());
+        }
+
     }
 }
