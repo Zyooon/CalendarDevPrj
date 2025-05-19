@@ -39,16 +39,10 @@ public class UserService {
 
     public UserInfoReponseDto showOneUser(Long id) {
 
-        Optional<User> user = userRepository.findById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."));
 
-        return new UserInfoReponseDto(
-                user.get().getId(),
-                user.get().getUsername(),
-                user.get().getEmail(),
-                user.get().getCreatedAt(),
-                user.get().getModifiedAt()
-        );
-
+        return new UserInfoReponseDto(user);
     }
 
     @Transactional
