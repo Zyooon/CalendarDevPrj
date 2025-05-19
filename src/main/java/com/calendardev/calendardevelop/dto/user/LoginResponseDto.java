@@ -1,4 +1,4 @@
-package com.calendardev.calendardevelop.dto;
+package com.calendardev.calendardevelop.dto.user;
 
 import lombok.Getter;
 
