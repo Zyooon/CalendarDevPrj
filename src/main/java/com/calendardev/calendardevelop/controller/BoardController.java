@@ -2,6 +2,7 @@ package com.calendardev.calendardevelop.controller;
 
 import com.calendardev.calendardevelop.common.Const;
 import com.calendardev.calendardevelop.dto.board.BoardAddRequestDto;
+import com.calendardev.calendardevelop.dto.board.BoardDetailResponseDto;
 import com.calendardev.calendardevelop.dto.board.BoardResponseDto;
 import com.calendardev.calendardevelop.dto.board.BoardUpdateRequestDto;
 import com.calendardev.calendardevelop.service.BoardService;
@@ -24,8 +25,8 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/create")
-    public ResponseEntity<BoardResponseDto> createBoard(@Valid @RequestBody BoardAddRequestDto requestDto,
-                                                        HttpServletRequest httpServletRequest){
+    public ResponseEntity<BoardDetailResponseDto> addOneBoard(@Valid @RequestBody BoardAddRequestDto requestDto,
+                                                              HttpServletRequest httpServletRequest){
         HttpSession session = httpServletRequest.getSession(false);
 
         if(session == null){
@@ -34,9 +35,9 @@ public class BoardController {
 
         Long userId = (Long)session.getAttribute(Const.USER_ID);
 
-        BoardResponseDto responseDto = boardService.createBoard(userId, requestDto);
+        boardService.addOneBoard(userId, requestDto);
 
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -46,8 +47,8 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BoardResponseDto> showOneBoard(@PathVariable Long id){
-        BoardResponseDto board = boardService.showOneBoard(id);
+    public ResponseEntity<BoardDetailResponseDto> showOneBoard(@PathVariable Long id){
+        BoardDetailResponseDto board = boardService.showOneBoard(id);
         return new ResponseEntity<>(board, HttpStatus.OK);
     }
 

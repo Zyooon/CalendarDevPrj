@@ -17,14 +17,6 @@ public class BoardResponseDto {
 
     private final LocalDateTime modifiedAt;
 
-    public BoardResponseDto(Long id, String title, String contents, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        this.id = id;
-        this.title = title;
-        this.contents = contents;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-    }
-
     public BoardResponseDto(Board board) {
         this.id = board.getId();
         this.title = board.getTitle();
@@ -33,12 +25,4 @@ public class BoardResponseDto {
         this.modifiedAt = board.getModifiedAt();
     }
 
-    public static BoardResponseDto toDto(Board board){
-        return new BoardResponseDto(
-                board.getId(),
-                board.getTitle(),
-                board.getContents(),
-                board.getCreatedAt(),
-                board.getModifiedAt());
-    }
 }

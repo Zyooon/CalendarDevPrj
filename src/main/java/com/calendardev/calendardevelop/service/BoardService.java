@@ -1,11 +1,15 @@
 package com.calendardev.calendardevelop.service;
 
 import com.calendardev.calendardevelop.dto.board.BoardAddRequestDto;
+import com.calendardev.calendardevelop.dto.board.BoardDetailResponseDto;
 import com.calendardev.calendardevelop.dto.board.BoardResponseDto;
 import com.calendardev.calendardevelop.dto.board.BoardUpdateRequestDto;
+import com.calendardev.calendardevelop.dto.comment.CommentResponseDto;
 import com.calendardev.calendardevelop.entity.Board;
+import com.calendardev.calendardevelop.entity.Comment;
 import com.calendardev.calendardevelop.entity.User;
 import com.calendardev.calendardevelop.repository.BoardRepository;
+import com.calendardev.calendardevelop.repository.CommentRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +26,9 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
-    public BoardResponseDto createBoard(Long userId, BoardAddRequestDto requestDto) {
+    public void addOneBoard(Long userId, BoardAddRequestDto requestDto) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
@@ -33,21 +39,23 @@ public class BoardService {
 
         Board savedBoard = boardRepository.save(board);
 
-
-        return new BoardResponseDto(board);
     }
 
     public List<BoardResponseDto> showAllBoard() {
         return boardRepository.findAll()
                 .stream()
-                .map(BoardResponseDto::toDto)
+                .map(BoardResponseDto::new)
                 .toList();
     }
 
-    public BoardResponseDto showOneBoard(Long id) {
-        Board findBoard = boardRepository.findById(id).
+    public BoardDetailResponseDto showOneBoard(Long boardId) {
+        Board findBoard = boardRepository.findById(boardId).
                 orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
-        return new BoardResponseDto(findBoard);
+
+        List<CommentResponseDto> commentList = commentRepository.findAllByBoardId(boardId).stream()
+                .map(CommentResponseDto::new)
+                .toList();
+        return new BoardDetailResponseDto(findBoard, commentList);
     }
 
     @Transactional
