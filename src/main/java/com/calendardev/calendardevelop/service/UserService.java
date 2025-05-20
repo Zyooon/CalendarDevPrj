@@ -32,15 +32,13 @@ public class UserService {
 
     public LoginResponseDto login(LoginRequestDto requestDto) {
 
-        String encodedPassword = passwordManager.encodePassword(requestDto.getPassword());
-
         Optional<User> user = userRepository.findByEmail(requestDto.getEmail());
 
         if(user.isEmpty()){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 회원 정보입니다.");
         }
 
-        if(!passwordManager.matchPassword(encodedPassword, user.get().getPassword())){
+        if(!passwordManager.matchPassword(requestDto.getPassword(), user.get().getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
@@ -58,12 +56,10 @@ public class UserService {
     @Transactional
     public void updateOneUser(Long id, UserUpdateRequestDto requestDto) {
 
-        String encodedPassword = passwordManager.encodePassword(requestDto.getOldPassword());
-
         User findUser = userRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
 
-        if(passwordManager.matchPassword(encodedPassword,findUser.getPassword())){
+        if(passwordManager.matchPassword(requestDto.getOldPassword(),findUser.getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
@@ -80,12 +76,10 @@ public class UserService {
 
     public void deleteOneUser(Long id, UserDeleteRequestDto requestDto) {
 
-        String encodedPassword = passwordManager.encodePassword(requestDto.getPassword());
-
         User findUser = userRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
 
-        if(passwordManager.matchPassword(encodedPassword, findUser.getPassword())){
+        if(passwordManager.matchPassword(requestDto.getPassword(), findUser.getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
