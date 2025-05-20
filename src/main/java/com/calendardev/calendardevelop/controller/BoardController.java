@@ -7,6 +7,7 @@ import com.calendardev.calendardevelop.dto.board.BoardUpdateRequestDto;
 import com.calendardev.calendardevelop.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/create")
-    public ResponseEntity<BoardResponseDto> createBoard(@RequestBody BoardAddRequestDto requestDto,
+    public ResponseEntity<BoardResponseDto> createBoard(@Valid @RequestBody BoardAddRequestDto requestDto,
                                                         HttpServletRequest httpServletRequest){
         HttpSession session = httpServletRequest.getSession(false);
 
@@ -52,7 +53,7 @@ public class BoardController {
 
     @PatchMapping("update/{id}")
     public ResponseEntity<Void> updateboard(@PathVariable Long id,
-                                            @RequestBody BoardUpdateRequestDto requestDto,
+                                            @Valid @RequestBody BoardUpdateRequestDto requestDto,
                                             HttpServletRequest httpServletRequest){
         HttpSession session = httpServletRequest.getSession(false);
         if(session == null){

@@ -60,11 +60,11 @@ public class BoardService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 사용자의 일정이 아닙니다.");
         }
 
-        if(requestDto.getTitle() != null && !requestDto.getTitle().isEmpty()){
+        if(isBlank(requestDto.getTitle())){
             findBoard.updateTitle(requestDto.getTitle());
         }
 
-        if(requestDto.getContents() != null && !requestDto.getContents().isEmpty()){
+        if(isBlank(requestDto.getContents())){
             findBoard.updateContents(requestDto.getContents());
         }
 
@@ -79,5 +79,9 @@ public class BoardService {
         }
 
         boardRepository.delete(findBoard);
+    }
+
+    private boolean isBlank(String str){
+        return str != null && !str.trim().isEmpty();
     }
 }
