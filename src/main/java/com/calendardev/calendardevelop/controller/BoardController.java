@@ -51,9 +51,9 @@ public class BoardController {
     }
 
     @PatchMapping("update/{id}")
-    public ResponseEntity<Void> updateOneboard(@PathVariable Long id,
-                                               @RequestBody BoardUpdateRequestDto requestDto,
-                                               HttpServletRequest httpServletRequest){
+    public ResponseEntity<Void> updateboard(@PathVariable Long id,
+                                            @RequestBody BoardUpdateRequestDto requestDto,
+                                            HttpServletRequest httpServletRequest){
         HttpSession session = httpServletRequest.getSession(false);
         if(session == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "로그인을 먼저 해야합니다.");
@@ -61,6 +61,21 @@ public class BoardController {
         Long userId = (Long)session.getAttribute(Const.USER_ID);
 
         boardService.updateBoard(id, userId, requestDto);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id,
+                                            HttpServletRequest httpServletRequest){
+        HttpSession session = httpServletRequest.getSession(false);
+        if(session == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "로그인을 먼저 해야합니다.");
+        }
+        Long userId = (Long)session.getAttribute(Const.USER_ID);
+
+        boardService.deleteBoard(id, userId);
 
         return new ResponseEntity<>(HttpStatus.OK);
 

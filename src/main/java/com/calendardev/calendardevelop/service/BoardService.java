@@ -69,4 +69,15 @@ public class BoardService {
         }
 
     }
+
+    public void deleteBoard(Long id, Long userId) {
+        Board findBoard = boardRepository.findById(id)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
+
+        if(!findBoard.getUser().getId().equals(userId)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "본인의 게시글만 삭제할 수 있습니다.");
+        }
+
+        boardRepository.delete(findBoard);
+    }
 }
