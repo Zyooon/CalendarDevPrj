@@ -7,6 +7,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,23 +22,23 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponseDto> singUp(@RequestBody SignUpRequestDto requestDto){
+    public ResponseEntity<SignUpResponseDto> singUp(@Valid @RequestBody SignUpRequestDto requestDto){
         SignUpResponseDto signUpResponseDto = userService.signUp(requestDto);
 
         return new ResponseEntity<>(signUpResponseDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserInfoReponseDto> showOneUser(@PathVariable Long id){
+    public ResponseEntity<UserResponseDto> showOneUser(@PathVariable Long id){
 
-        UserInfoReponseDto userInfoReponseDto = userService.showOneUser(id);
+        UserResponseDto userResponseDto = userService.showOneUser(id);
 
-        return new ResponseEntity<>(userInfoReponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
     @PatchMapping("/update/{id}")
     public ResponseEntity<Void> updateOneUser(@PathVariable Long id,
-                                              @RequestBody UpdateUserRequestDto requestDto){
+                                              @Valid @RequestBody UserUpdateRequestDto requestDto){
 
         userService.updateOneUser(id, requestDto);
         
@@ -46,7 +47,7 @@ public class UserController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteOneUser(@PathVariable Long id,
-                                              @RequestBody DeleteUserRequestDto requestDto){
+                                              @Valid @RequestBody UserDeleteRequestDto requestDto){
 
         userService.deleteOneUser(id, requestDto);
 
@@ -54,7 +55,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequestDto requestDto,
+    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDto requestDto,
                                                   HttpServletRequest httpServletRequest){
 
         if(httpServletRequest.getSession(false) != null){

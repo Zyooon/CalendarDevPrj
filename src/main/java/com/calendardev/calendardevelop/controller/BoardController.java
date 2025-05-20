@@ -1,7 +1,7 @@
 package com.calendardev.calendardevelop.controller;
 
 import com.calendardev.calendardevelop.common.Const;
-import com.calendardev.calendardevelop.dto.board.BoardRequestDto;
+import com.calendardev.calendardevelop.dto.board.BoardAddRequestDto;
 import com.calendardev.calendardevelop.dto.board.BoardResponseDto;
 import com.calendardev.calendardevelop.dto.board.BoardUpdateRequestDto;
 import com.calendardev.calendardevelop.service.BoardService;
@@ -23,7 +23,7 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/create")
-    public ResponseEntity<BoardResponseDto> createBoard(@RequestBody BoardRequestDto requestDto,
+    public ResponseEntity<BoardResponseDto> createBoard(@RequestBody BoardAddRequestDto requestDto,
                                                         HttpServletRequest httpServletRequest){
         HttpSession session = httpServletRequest.getSession(false);
 

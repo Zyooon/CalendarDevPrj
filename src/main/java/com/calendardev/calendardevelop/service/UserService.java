@@ -41,16 +41,16 @@ public class UserService {
         return new LoginResponseDto(user.get().getId());
     }
 
-    public UserInfoReponseDto showOneUser(Long id) {
+    public UserResponseDto showOneUser(Long id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."));
 
-        return new UserInfoReponseDto(user);
+        return new UserResponseDto(user);
     }
 
     @Transactional
-    public void updateOneUser(Long id, UpdateUserRequestDto requestDto) {
+    public void updateOneUser(Long id, UserUpdateRequestDto requestDto) {
 
         User findUser = userRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
@@ -69,7 +69,7 @@ public class UserService {
 
     }
 
-    public void deleteOneUser(Long id, DeleteUserRequestDto requestDto) {
+    public void deleteOneUser(Long id, UserDeleteRequestDto requestDto) {
 
         Optional<User> findUser = userRepository.findById(id);
 

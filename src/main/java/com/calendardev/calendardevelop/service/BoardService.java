@@ -1,6 +1,6 @@
 package com.calendardev.calendardevelop.service;
 
-import com.calendardev.calendardevelop.dto.board.BoardRequestDto;
+import com.calendardev.calendardevelop.dto.board.BoardAddRequestDto;
 import com.calendardev.calendardevelop.dto.board.BoardResponseDto;
 import com.calendardev.calendardevelop.dto.board.BoardUpdateRequestDto;
 import com.calendardev.calendardevelop.entity.Board;
@@ -22,7 +22,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
-    public BoardResponseDto createBoard(Long userId, BoardRequestDto requestDto) {
+    public BoardResponseDto createBoard(Long userId, BoardAddRequestDto requestDto) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
