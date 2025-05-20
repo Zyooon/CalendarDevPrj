@@ -1,6 +1,7 @@
 package com.calendardev.calendardevelop.controller;
 
 import com.calendardev.calendardevelop.common.Const;
+import com.calendardev.calendardevelop.common.LoginManager;
 import com.calendardev.calendardevelop.dto.board.BoardAddRequestDto;
 import com.calendardev.calendardevelop.dto.board.BoardDetailResponseDto;
 import com.calendardev.calendardevelop.dto.board.BoardResponseDto;
@@ -23,6 +24,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final LoginManager loginManager;
 
     @PostMapping("/create")
     public ResponseEntity<BoardDetailResponseDto> addOneBoard(@Valid @RequestBody BoardAddRequestDto requestDto,

@@ -1,7 +1,9 @@
 package com.calendardev.calendardevelop.controller;
 
 import com.calendardev.calendardevelop.common.Const;
-import com.calendardev.calendardevelop.dto.comment.CommnetAddRequestDto;
+import com.calendardev.calendardevelop.common.LoginManager;
+import com.calendardev.calendardevelop.dto.comment.CommentResponseDto;
+import com.calendardev.calendardevelop.dto.comment.CommnetRequestDto;
 import com.calendardev.calendardevelop.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -17,22 +19,45 @@ import org.springframework.web.server.ResponseStatusException;
 public class CommentController {
 
     private final CommentService commentService;
+    private final LoginManager loginManager;
 
-    @PostMapping("comment")
+    @PostMapping("/comment")
     public ResponseEntity<Void> addComment(@PathVariable Long boardId,
-                                           @RequestBody CommnetAddRequestDto requestDto,
+                                           @RequestBody CommnetRequestDto requestDto,
                                            HttpServletRequest httpServletRequest){
-        HttpSession session = httpServletRequest.getSession(false);
 
-        if(session == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "로그인을 먼저 해야합니다.");
-        }
-
-        Long userId = (Long)session.getAttribute(Const.USER_ID);
+        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
         commentService.addComment(boardId, userId, requestDto);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
+
+    }
+
+    @PatchMapping("/comment/{commentId}")
+    public ResponseEntity<Void> updateComment(@PathVariable Long boardId,
+                                              @PathVariable Long commentId,
+                                              @RequestBody CommnetRequestDto requestDto,
+                                              HttpServletRequest httpServletRequest){
+
+        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+
+        commentService.updateComment(commentId, boardId, userId, requestDto);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long boardId,
+                                              @PathVariable Long commentId,
+                                              HttpServletRequest httpServletRequest){
+
+        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+
+        commentService.deleteComment(commentId, boardId, userId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
 
     }
 }

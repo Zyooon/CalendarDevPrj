@@ -90,6 +90,7 @@ public class BoardService {
     }
 
     private boolean isBlank(String str){
+
         return str != null && !str.trim().isEmpty();
     }
 }
