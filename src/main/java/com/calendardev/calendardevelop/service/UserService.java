@@ -28,13 +28,17 @@ public class UserService {
 
     public LoginResponseDto login(LoginRequestDto requestDto) {
 
-        User user = userRepository.findByEmail(requestDto.getEmail());
+        Optional<User> user = userRepository.findByEmail(requestDto.getEmail());
 
-        if(!requestDto.getPassword().equals(user.getPassword())){
-            return null;
+        if(user.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 회원 정보입니다.");
         }
 
-        return new LoginResponseDto(user.getId());
+        if(!requestDto.getPassword().equals(user.get().getPassword())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 회원 정보입니다.");
+        }
+
+        return new LoginResponseDto(user.get().getId());
     }
 
     public UserInfoReponseDto showOneUser(Long id) {
