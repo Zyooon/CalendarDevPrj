@@ -1,5 +1,6 @@
 package com.calendardev.calendardevelop.service;
 
+import com.calendardev.calendardevelop.common.PasswordManager;
 import com.calendardev.calendardevelop.dto.user.*;
 import com.calendardev.calendardevelop.entity.User;
 import com.calendardev.calendardevelop.repository.UserRepository;
@@ -16,10 +17,13 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordManager passwordManager;
 
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
 
-        User user = new User(requestDto.getUsername(), requestDto.getEmail(), requestDto.getPassword());
+        String encodedPassword = passwordManager.encodePassword(requestDto.getPassword());
+
+        User user = new User(requestDto.getUsername(), requestDto.getEmail(), encodedPassword);
 
         User savedUser = userRepository.save(user);
 
@@ -28,14 +32,16 @@ public class UserService {
 
     public LoginResponseDto login(LoginRequestDto requestDto) {
 
+        String encodedPassword = passwordManager.encodePassword(requestDto.getPassword());
+
         Optional<User> user = userRepository.findByEmail(requestDto.getEmail());
 
         if(user.isEmpty()){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 회원 정보입니다.");
         }
 
-        if(!requestDto.getPassword().equals(user.get().getPassword())){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 회원 정보입니다.");
+        if(!passwordManager.matchPassword(encodedPassword, user.get().getPassword())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
         return new LoginResponseDto(user.get().getId());
@@ -44,7 +50,7 @@ public class UserService {
     public UserResponseDto showOneUser(Long id) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."));
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 회원 정보입니다."));
 
         return new UserResponseDto(user);
     }
@@ -52,10 +58,12 @@ public class UserService {
     @Transactional
     public void updateOneUser(Long id, UserUpdateRequestDto requestDto) {
 
+        String encodedPassword = passwordManager.encodePassword(requestDto.getOldPassword());
+
         User findUser = userRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
 
-        if(!findUser.getPassword().equals(requestDto.getOldPassword())){
+        if(passwordManager.matchPassword(encodedPassword,findUser.getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
@@ -64,20 +72,24 @@ public class UserService {
         }
 
         if(requestDto.getNewPassword() != null && !requestDto.getNewPassword().isEmpty()){
-            findUser.updatePassword(requestDto.getNewPassword());
+            String encodedNewPassword = passwordManager.encodePassword(requestDto.getNewPassword());
+            findUser.updatePassword(encodedNewPassword);
         }
 
     }
 
     public void deleteOneUser(Long id, UserDeleteRequestDto requestDto) {
 
-        Optional<User> findUser = userRepository.findById(id);
+        String encodedPassword = passwordManager.encodePassword(requestDto.getPassword());
 
-        if(!findUser.get().getPassword().equals(requestDto.getPassword())){
+        User findUser = userRepository.findById(id)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
+
+        if(passwordManager.matchPassword(encodedPassword, findUser.getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
-        userRepository.delete(findUser.get());
-
+        userRepository.delete(findUser);
     }
+
 }
