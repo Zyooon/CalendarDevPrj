@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -75,16 +74,20 @@ public class BoardService {
         if(isBlank(requestDto.getContents())){
             findBoard.updateContents(requestDto.getContents());
         }
-
     }
 
-    public void deleteBoard(Long id, Long userId) {
-        Board findBoard = boardRepository.findById(id)
+    public void deleteBoard(Long boardId, Long userId) {
+        Board findBoard = boardRepository.findById(boardId)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
 
         if(!findBoard.getUser().getId().equals(userId)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "본인의 게시글만 삭제할 수 있습니다.");
         }
+
+        List<Comment> commentList = commentRepository.findAllByBoardId(boardId).stream()
+              .toList();
+
+        commentRepository.deleteAll(commentList);
 
         boardRepository.delete(findBoard);
     }

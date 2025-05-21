@@ -1,17 +1,13 @@
 package com.calendardev.calendardevelop.controller;
 
-import com.calendardev.calendardevelop.common.Const;
 import com.calendardev.calendardevelop.common.LoginManager;
-import com.calendardev.calendardevelop.dto.comment.CommentResponseDto;
 import com.calendardev.calendardevelop.dto.comment.CommnetRequestDto;
 import com.calendardev.calendardevelop.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/calendar/board/{boardId}")
