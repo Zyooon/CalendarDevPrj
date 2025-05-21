@@ -66,7 +66,7 @@ public class UserService {
         User findUser = userRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
 
-        if(passwordManager.matchPassword(requestDto.getOldPassword(),findUser.getPassword())){
+        if(!passwordManager.matchPassword(requestDto.getOldPassword(),findUser.getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
@@ -86,7 +86,7 @@ public class UserService {
         User findUser = userRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
 
-        if(passwordManager.matchPassword(requestDto.getPassword(), findUser.getPassword())){
+        if(!passwordManager.matchPassword(requestDto.getPassword(), findUser.getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
