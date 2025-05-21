@@ -52,13 +52,19 @@ public class BoardService {
         return pagedBoardList.map(BoardResponseDto::new);
     }
 
-    public BoardDetailResponseDto getOneBoard(Long boardId) {
+    public BoardDetailResponseDto getOneBoard(Long boardId, int page, int size) {
+
         Board findBoard = boardRepository.findById(boardId).
                 orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
 
-        List<CommentResponseDto> commentList = commentRepository.findAllByBoardId(boardId).stream()
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Comment> pagedCommentList = commentRepository.findAllByBoardIdOrderByCreatedAtDesc(boardId, pageable);
+
+        List<CommentResponseDto> commentList = pagedCommentList.stream()
                 .map(CommentResponseDto::new)
                 .toList();
+
         return new BoardDetailResponseDto(findBoard, commentList);
     }
 

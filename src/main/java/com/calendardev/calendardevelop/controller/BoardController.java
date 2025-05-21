@@ -43,8 +43,10 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BoardDetailResponseDto> getOneBoard(@PathVariable Long id){
-        BoardDetailResponseDto board = boardService.getOneBoard(id);
+    public ResponseEntity<BoardDetailResponseDto> getOneBoard(@PathVariable Long id,
+                                                              @RequestParam(defaultValue = "1") int page,
+                                                              @RequestParam(defaultValue = "5") int size){
+        BoardDetailResponseDto board = boardService.getOneBoard(id, page-1, size);
         return new ResponseEntity<>(board, HttpStatus.OK);
     }
 
