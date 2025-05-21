@@ -35,7 +35,7 @@ public class UserController {
 
         Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
-        UserResponseDto userResponseDto = userService.showOneUser(userId);
+        UserResponseDto userResponseDto = userService.getOneUserDetail(userId);
 
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
@@ -46,7 +46,7 @@ public class UserController {
 
         Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
-        userService.updateOneUser(userId, requestDto);
+        userService.updateUser(userId, requestDto);
         
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -58,7 +58,7 @@ public class UserController {
 
         Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
-        userService.deleteOneUser(userId, requestDto);
+        userService.deleteUser(userId, requestDto);
 
         //유저 정보 삭제 후 세션 만료
         HttpSession session = httpServletRequest.getSession(false);

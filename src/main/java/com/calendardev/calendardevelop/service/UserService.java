@@ -52,7 +52,7 @@ public class UserService {
         return new LoginResponseDto(user.get().getId());
     }
 
-    public UserResponseDto showOneUser(Long id) {
+    public UserResponseDto getOneUserDetail(Long id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 회원 정보입니다."));
@@ -61,7 +61,7 @@ public class UserService {
     }
 
     @Transactional
-    public void updateOneUser(Long id, UserUpdateRequestDto requestDto) {
+    public void updateUser(Long id, UserUpdateRequestDto requestDto) {
 
         User findUser = userRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
@@ -81,7 +81,7 @@ public class UserService {
 
     }
 
-    public void deleteOneUser(Long id, UserDeleteRequestDto requestDto) {
+    public void deleteUser(Long id, UserDeleteRequestDto requestDto) {
 
         User findUser = userRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
