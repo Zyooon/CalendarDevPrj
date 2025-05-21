@@ -9,6 +9,7 @@ import com.calendardev.calendardevelop.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,14 +36,15 @@ public class BoardController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BoardResponseDto>> showAllBoard(){
-        List<BoardResponseDto> list = boardService.showAllBoard();
-        return new ResponseEntity<>(list, HttpStatus.OK);
+    public ResponseEntity<List<BoardResponseDto>> getPagedBoards(@RequestParam(defaultValue = "1") int page,
+                                                                 @RequestParam(defaultValue = "5") int size){
+        Page<BoardResponseDto> pagedBoardList = boardService.getPagedBoards(page, size);
+        return new ResponseEntity<>(pagedBoardList.getContent(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BoardDetailResponseDto> showOneBoard(@PathVariable Long id){
-        BoardDetailResponseDto board = boardService.showOneBoard(id);
+    public ResponseEntity<BoardDetailResponseDto> getOneBoard(@PathVariable Long id){
+        BoardDetailResponseDto board = boardService.getOneBoard(id);
         return new ResponseEntity<>(board, HttpStatus.OK);
     }
 

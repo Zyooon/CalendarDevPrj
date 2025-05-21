@@ -13,6 +13,9 @@ import com.calendardev.calendardevelop.repository.CommentRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -40,14 +43,16 @@ public class BoardService {
 
     }
 
-    public List<BoardResponseDto> showAllBoard() {
-        return boardRepository.findAll()
-                .stream()
-                .map(BoardResponseDto::new)
-                .toList();
+    public Page<BoardResponseDto> getPagedBoards(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Board> pagedBoardList = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
+
+        return pagedBoardList.map(BoardResponseDto::new);
     }
 
-    public BoardDetailResponseDto showOneBoard(Long boardId) {
+    public BoardDetailResponseDto getOneBoard(Long boardId) {
         Board findBoard = boardRepository.findById(boardId).
                 orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
 

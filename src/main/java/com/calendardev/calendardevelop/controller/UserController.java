@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/detail")
-    public ResponseEntity<UserResponseDto> showOneUser(HttpServletRequest httpServletRequest){
+    public ResponseEntity<UserResponseDto> getOneUserDetail(HttpServletRequest httpServletRequest){
 
         Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
@@ -41,8 +41,8 @@ public class UserController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<Void> updateOneUser(@Valid @RequestBody UserUpdateRequestDto requestDto,
-                                              HttpServletRequest httpServletRequest){
+    public ResponseEntity<Void> updateUser(@Valid @RequestBody UserUpdateRequestDto requestDto,
+                                           HttpServletRequest httpServletRequest){
 
         Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
@@ -52,9 +52,9 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Void> deleteOneUser(@Valid @RequestBody UserDeleteRequestDto requestDto,
-                                              HttpServletRequest httpServletRequest,
-                                              HttpServletResponse httpServletResponse){
+    public ResponseEntity<Void> deleteUser(@Valid @RequestBody UserDeleteRequestDto requestDto,
+                                           HttpServletRequest httpServletRequest,
+                                           HttpServletResponse httpServletResponse){
 
         Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
