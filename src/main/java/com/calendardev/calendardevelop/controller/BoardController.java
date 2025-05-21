@@ -1,6 +1,5 @@
 package com.calendardev.calendardevelop.controller;
 
-import com.calendardev.calendardevelop.common.Const;
 import com.calendardev.calendardevelop.common.LoginManager;
 import com.calendardev.calendardevelop.dto.board.BoardAddRequestDto;
 import com.calendardev.calendardevelop.dto.board.BoardDetailResponseDto;
@@ -8,13 +7,11 @@ import com.calendardev.calendardevelop.dto.board.BoardResponseDto;
 import com.calendardev.calendardevelop.dto.board.BoardUpdateRequestDto;
 import com.calendardev.calendardevelop.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -29,13 +26,8 @@ public class BoardController {
     @PostMapping("/create")
     public ResponseEntity<BoardDetailResponseDto> addOneBoard(@Valid @RequestBody BoardAddRequestDto requestDto,
                                                               HttpServletRequest httpServletRequest){
-        HttpSession session = httpServletRequest.getSession(false);
 
-        if(session == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "로그인을 먼저 해야합니다.");
-        }
-
-        Long userId = (Long)session.getAttribute(Const.USER_ID);
+        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
         boardService.addOneBoard(userId, requestDto);
 
@@ -58,11 +50,7 @@ public class BoardController {
     public ResponseEntity<Void> updateboard(@PathVariable Long id,
                                             @Valid @RequestBody BoardUpdateRequestDto requestDto,
                                             HttpServletRequest httpServletRequest){
-        HttpSession session = httpServletRequest.getSession(false);
-        if(session == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "로그인을 먼저 해야합니다.");
-        }
-        Long userId = (Long)session.getAttribute(Const.USER_ID);
+        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
         boardService.updateBoard(id, userId, requestDto);
 
@@ -73,11 +61,7 @@ public class BoardController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteBoard(@PathVariable Long id,
                                             HttpServletRequest httpServletRequest){
-        HttpSession session = httpServletRequest.getSession(false);
-        if(session == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "로그인을 먼저 해야합니다.");
-        }
-        Long userId = (Long)session.getAttribute(Const.USER_ID);
+        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
         boardService.deleteBoard(id, userId);
 

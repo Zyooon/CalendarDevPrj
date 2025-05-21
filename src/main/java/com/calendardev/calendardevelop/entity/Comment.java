@@ -17,12 +17,10 @@ public class Comment extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "board_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Board board;
 
     public Comment() {

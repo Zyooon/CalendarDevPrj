@@ -36,7 +36,7 @@ public class BoardService {
         
         board.setUser(user);
 
-        Board savedBoard = boardRepository.save(board);
+        boardRepository.save(board);
 
     }
 
@@ -76,6 +76,7 @@ public class BoardService {
         }
     }
 
+    @Transactional
     public void deleteBoard(Long boardId, Long userId) {
         Board findBoard = boardRepository.findById(boardId)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
@@ -84,10 +85,11 @@ public class BoardService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "본인의 게시글만 삭제할 수 있습니다.");
         }
 
-        List<Comment> commentList = commentRepository.findAllByBoardId(boardId).stream()
-              .toList();
+        List<Comment> commentList = commentRepository.findAllByBoardId(boardId).stream().toList();
 
-        commentRepository.deleteAll(commentList);
+        if(!commentList.isEmpty()){
+            commentRepository.deleteAll(commentList);
+        }
 
         boardRepository.delete(findBoard);
     }

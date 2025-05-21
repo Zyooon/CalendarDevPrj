@@ -68,6 +68,7 @@ public class CommentService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "본인의 게시글만 삭제할 수 있습니다.");
         }
 
+
         commentRepository.delete(findComment.get());
 
     }

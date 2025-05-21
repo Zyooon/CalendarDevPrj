@@ -1,6 +1,7 @@
 package com.calendardev.calendardevelop.controller;
 
 import com.calendardev.calendardevelop.common.Const;
+import com.calendardev.calendardevelop.common.LoginManager;
 import com.calendardev.calendardevelop.dto.user.*;
 import com.calendardev.calendardevelop.service.UserService;
 import jakarta.servlet.http.Cookie;
@@ -20,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserController {
 
     private final UserService userService;
+    private final LoginManager loginManager;
 
     @PostMapping("/signup")
     public ResponseEntity<SignUpResponseDto> singUp(@Valid @RequestBody SignUpRequestDto requestDto){
@@ -28,28 +30,42 @@ public class UserController {
         return new ResponseEntity<>(signUpResponseDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDto> showOneUser(@PathVariable Long id){
+    @GetMapping("/detail")
+    public ResponseEntity<UserResponseDto> showOneUser(HttpServletRequest httpServletRequest){
 
-        UserResponseDto userResponseDto = userService.showOneUser(id);
+        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+
+        UserResponseDto userResponseDto = userService.showOneUser(userId);
 
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
-    @PatchMapping("/update/{id}")
-    public ResponseEntity<Void> updateOneUser(@PathVariable Long id,
-                                              @Valid @RequestBody UserUpdateRequestDto requestDto){
+    @PatchMapping("/update")
+    public ResponseEntity<Void> updateOneUser(@Valid @RequestBody UserUpdateRequestDto requestDto,
+                                              HttpServletRequest httpServletRequest){
 
-        userService.updateOneUser(id, requestDto);
+        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+
+        userService.updateOneUser(userId, requestDto);
         
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteOneUser(@PathVariable Long id,
-                                              @Valid @RequestBody UserDeleteRequestDto requestDto){
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteOneUser(@Valid @RequestBody UserDeleteRequestDto requestDto,
+                                              HttpServletRequest httpServletRequest,
+                                              HttpServletResponse httpServletResponse){
 
-        userService.deleteOneUser(id, requestDto);
+        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+
+        userService.deleteOneUser(userId, requestDto);
+
+        //유저 정보 삭제 후 세션 만료
+        HttpSession session = httpServletRequest.getSession(false);
+
+        if(session != null){
+            resetSessionAndCookies(session, httpServletResponse);
+        }
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -76,16 +92,20 @@ public class UserController {
         HttpSession session = request.getSession(false);
 
         if(session != null){
-            session.invalidate();
-
-            // postman 에서는 서버에서 자체적으로 쿠키(JSESSIONID)를 계속 보냄
-            Cookie cookie = new Cookie("JSESSIONID", null);
-            cookie.setPath("/");
-            cookie.setMaxAge(0); // 즉시 만료
-            response.addCookie(cookie);
+            resetSessionAndCookies(session, response);
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private void resetSessionAndCookies(HttpSession session, HttpServletResponse response){
+        //세션 만료
+        session.invalidate();
+        // postman 에서는 서버에서 자체적으로 쿠키(JSESSIONID)를 계속 보냄
+        Cookie cookie = new Cookie("JSESSIONID", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // 즉시 만료
+        response.addCookie(cookie);
     }
 
 }

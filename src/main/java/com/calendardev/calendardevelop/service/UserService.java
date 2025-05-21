@@ -2,7 +2,11 @@ package com.calendardev.calendardevelop.service;
 
 import com.calendardev.calendardevelop.common.PasswordManager;
 import com.calendardev.calendardevelop.dto.user.*;
+import com.calendardev.calendardevelop.entity.Board;
+import com.calendardev.calendardevelop.entity.Comment;
 import com.calendardev.calendardevelop.entity.User;
+import com.calendardev.calendardevelop.repository.BoardRepository;
+import com.calendardev.calendardevelop.repository.CommentRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +23,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordManager passwordManager;
+    private final CommentRepository commentRepository;
+    private final BoardRepository boardRepository;
 
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
 
@@ -81,6 +88,18 @@ public class UserService {
 
         if(passwordManager.matchPassword(requestDto.getPassword(), findUser.getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        }
+
+        List<Comment> commentList = commentRepository.findAllByUserId(findUser.getId()).stream().toList();
+
+        if(!commentList.isEmpty()){
+            commentRepository.deleteAll(commentList);
+        }
+
+        List<Board> boardList = boardRepository.findAllByUserId(findUser.getId()).stream().toList();
+
+        if(!boardList.isEmpty()){
+            boardRepository.deleteAll(boardList);
         }
 
         userRepository.delete(findUser);

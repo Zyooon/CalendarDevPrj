@@ -3,8 +3,6 @@ package com.calendardev.calendardevelop.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
 @Entity
 @Table(name = "board")
