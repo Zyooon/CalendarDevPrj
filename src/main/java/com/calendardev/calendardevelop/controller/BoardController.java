@@ -38,7 +38,7 @@ public class BoardController {
     @GetMapping
     public ResponseEntity<List<BoardResponseDto>> getPagedBoards(@RequestParam(defaultValue = "1") int page,
                                                                  @RequestParam(defaultValue = "5") int size){
-        Page<BoardResponseDto> pagedBoardList = boardService.getPagedBoards(page, size);
+        Page<BoardResponseDto> pagedBoardList = boardService.getPagedBoards(page-1, size);
         return new ResponseEntity<>(pagedBoardList.getContent(), HttpStatus.OK);
     }
 
