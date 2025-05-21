@@ -11,7 +11,7 @@ import com.calendardev.calendardevelop.entity.User;
 import com.calendardev.calendardevelop.repository.BoardRepository;
 import com.calendardev.calendardevelop.repository.CommentRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,19 +30,21 @@ public class BoardService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
 
+    @Transactional
     public void addOneBoard(Long userId, BoardAddRequestDto requestDto) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
 
         Board board = new Board(requestDto.getTitle(), requestDto.getContents());
-        
+
         board.setUser(user);
 
         boardRepository.save(board);
 
     }
 
+    @Transactional(readOnly = true)
     public Page<BoardResponseDto> getPagedBoards(int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);

@@ -1,18 +1,17 @@
 package com.calendardev.calendardevelop.dto.exception;
 
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@Getter
 public class ExceptionDto {
-    private final String errorCode;
+    private final int status;
     private final String message;
     private final String location; // 추가됨
 
-    public ExceptionDto(String errorCode, String message, String location) {
-        this.errorCode = errorCode;
+    public ExceptionDto(HttpStatus status, String message, String location) {
+        this.status = status.value();
         this.message = message;
         this.location = location;
-    }
-
-    public ExceptionDto(String errorCode, String message) {
-
-        this(errorCode, message, null);
     }
 }

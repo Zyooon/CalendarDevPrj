@@ -24,10 +24,10 @@ public class UserController {
     private final LoginManager loginManager;
 
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponseDto> signUp(@Valid @RequestBody SignUpRequestDto requestDto){
-        SignUpResponseDto signUpResponseDto = userService.signUp(requestDto);
+    public ResponseEntity<String> signUp(@Valid @RequestBody SignUpRequestDto requestDto){
+        userService.signUp(requestDto);
 
-        return new ResponseEntity<>(signUpResponseDto, HttpStatus.CREATED);
+        return new ResponseEntity<>("회원가입에 성공했습니다.", HttpStatus.CREATED);
     }
 
     @PostMapping("/login")

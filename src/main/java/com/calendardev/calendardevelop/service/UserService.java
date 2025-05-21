@@ -1,5 +1,6 @@
 package com.calendardev.calendardevelop.service;
 
+import com.calendardev.calendardevelop.common.CustomException;
 import com.calendardev.calendardevelop.common.PasswordManager;
 import com.calendardev.calendardevelop.dto.user.*;
 import com.calendardev.calendardevelop.entity.Board;
@@ -8,10 +9,11 @@ import com.calendardev.calendardevelop.entity.User;
 import com.calendardev.calendardevelop.repository.BoardRepository;
 import com.calendardev.calendardevelop.repository.CommentRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -26,15 +28,24 @@ public class UserService {
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
 
-    public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
+    public void signUp(SignUpRequestDto requestDto) {
 
-        String encodedPassword = passwordManager.encodePassword(requestDto.getPassword());
+        try {
+            String encodedPassword = passwordManager.encodePassword(requestDto.getPassword());
 
-        User user = new User(requestDto.getUsername(), requestDto.getEmail(), encodedPassword);
+            User user = new User(requestDto.getUsername(), requestDto.getEmail(), encodedPassword);
 
-        User savedUser = userRepository.save(user);
+            userRepository.save(user);
 
-        return new SignUpResponseDto(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
+        }catch (DataIntegrityViolationException e) {
+
+            throw new CustomException(HttpStatus.CONFLICT, "이미 존재하는 사용자입니다.");
+
+        } catch (Exception e) {
+
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "회원가입 중 오류가 발생했습니다.");
+
+        }
     }
 
     public LoginResponseDto login(LoginRequestDto requestDto) {
@@ -45,7 +56,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 회원 정보입니다.");
         }
 
-        if(!passwordManager.matchPassword(requestDto.getPassword(), user.get().getPassword())){
+        if(!passwordManager.isPasswordMatch(requestDto.getPassword(), user.get().getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
@@ -66,7 +77,7 @@ public class UserService {
         User findUser = userRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
 
-        if(!passwordManager.matchPassword(requestDto.getOldPassword(),findUser.getPassword())){
+        if(!passwordManager.isPasswordMatch(requestDto.getOldPassword(),findUser.getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
@@ -86,7 +97,7 @@ public class UserService {
         User findUser = userRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
 
-        if(!passwordManager.matchPassword(requestDto.getPassword(), findUser.getPassword())){
+        if(!passwordManager.isPasswordMatch(requestDto.getPassword(), findUser.getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 

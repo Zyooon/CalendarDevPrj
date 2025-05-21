@@ -14,7 +14,7 @@ public class PasswordManager {
         return passwordEncoder.encode(rawPassword);
     }
 
-    public boolean matchPassword(String inputPassword, String encodedPassword){
+    public boolean isPasswordMatch(String inputPassword, String encodedPassword){
         return passwordEncoder.matches(inputPassword, encodedPassword);
     }
 

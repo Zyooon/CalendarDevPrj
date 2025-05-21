@@ -1,14 +1,15 @@
 package com.calendardev.calendardevelop.common;
 
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@Getter
 public class CustomException extends RuntimeException{
-    private final String errorCode;
+    private final HttpStatus status;
 
-    public CustomException(String errorCode, String message){
+    public CustomException(HttpStatus status, String message){
         super(message);
-        this.errorCode = errorCode;
+        this.status = status;
     }
 
-    public String getErrorCode(){
-        return errorCode;
-    }
 }

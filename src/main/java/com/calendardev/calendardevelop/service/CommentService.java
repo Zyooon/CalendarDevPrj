@@ -7,7 +7,7 @@ import com.calendardev.calendardevelop.entity.User;
 import com.calendardev.calendardevelop.repository.BoardRepository;
 import com.calendardev.calendardevelop.repository.CommentRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
