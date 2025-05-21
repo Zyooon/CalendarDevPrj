@@ -16,13 +16,6 @@ public class CommentResponseDto {
 
     private final LocalDateTime modifiedAt;
 
-    public CommentResponseDto(Long id, String contents, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        this.id = id;
-        this.contents = contents;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-    }
-
     public CommentResponseDto(Comment comment){
         this.id = comment.getId();
         this.contents = comment.getContents();

@@ -6,7 +6,6 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 public class BoardDetailResponseDto {
@@ -21,15 +20,6 @@ public class BoardDetailResponseDto {
     private final LocalDateTime modifiedAt;
 
     private final List<CommentResponseDto> comments;
-
-    public BoardDetailResponseDto(Long id, String title, String contents, LocalDateTime createdAt, LocalDateTime modifiedAt,List<CommentResponseDto> comments) {
-        this.id = id;
-        this.title = title;
-        this.contents = contents;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-        this.comments = comments;
-    }
 
     public BoardDetailResponseDto(Board board, List<CommentResponseDto> comments) {
         this.id = board.getId();

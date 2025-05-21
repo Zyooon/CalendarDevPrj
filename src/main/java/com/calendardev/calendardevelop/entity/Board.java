@@ -2,6 +2,7 @@ package com.calendardev.calendardevelop.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -17,6 +18,7 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private String contents;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -27,10 +29,6 @@ public class Board extends BaseEntity {
     public Board(String title, String contents) {
         this.title = title;
         this.contents = contents;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public void updateTitle(String title){

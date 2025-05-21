@@ -12,6 +12,7 @@ public class ExceptionDto {
     }
 
     public ExceptionDto(String errorCode, String message) {
-        this(errorCode, message, null); // location 생략 가능
+
+        this(errorCode, message, null);
     }
 }

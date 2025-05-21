@@ -30,6 +30,34 @@ public class UserController {
         return new ResponseEntity<>(signUpResponseDto, HttpStatus.CREATED);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDto requestDto,
+                                      HttpServletRequest httpServletRequest){
+
+        if(httpServletRequest.getSession(false) != null){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 로그인된 사용자입니다.");
+        }
+
+        LoginResponseDto loginResponseDto = userService.login(requestDto);
+
+        HttpSession session = httpServletRequest.getSession();
+
+        session.setAttribute(Const.USER_ID, loginResponseDto.getId());
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response){
+        HttpSession session = request.getSession(false);
+
+        if(session != null){
+            resetSessionAndCookies(session, response);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/detail")
     public ResponseEntity<UserResponseDto> getOneUserDetail(HttpServletRequest httpServletRequest){
 
@@ -70,33 +98,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDto requestDto,
-                                                  HttpServletRequest httpServletRequest){
 
-        if(httpServletRequest.getSession(false) != null){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 로그인된 사용자입니다.");
-        }
-
-        LoginResponseDto loginResponseDto = userService.login(requestDto);
-
-        HttpSession session = httpServletRequest.getSession();
-
-        session.setAttribute(Const.USER_ID, loginResponseDto.getId());
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response){
-        HttpSession session = request.getSession(false);
-
-        if(session != null){
-            resetSessionAndCookies(session, response);
-        }
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
     private void resetSessionAndCookies(HttpSession session, HttpServletResponse response){
         //세션 만료
