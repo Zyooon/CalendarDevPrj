@@ -22,7 +22,7 @@ public class CommentController {
                                            @RequestBody CommnetRequestDto requestDto,
                                            HttpServletRequest httpServletRequest){
 
-        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+        Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         commentService.addComment(boardId, userId, requestDto);
 
@@ -36,7 +36,7 @@ public class CommentController {
                                               @RequestBody CommnetRequestDto requestDto,
                                               HttpServletRequest httpServletRequest){
 
-        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+        Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         commentService.updateComment(commentId, boardId, userId, requestDto);
 
@@ -49,7 +49,7 @@ public class CommentController {
                                               @PathVariable Long commentId,
                                               HttpServletRequest httpServletRequest){
 
-        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+        Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         commentService.deleteComment(commentId, boardId, userId);
 

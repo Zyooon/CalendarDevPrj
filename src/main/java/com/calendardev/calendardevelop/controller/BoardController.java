@@ -28,7 +28,7 @@ public class BoardController {
     public ResponseEntity<String> addOneBoard(@Valid @RequestBody BoardAddRequestDto requestDto,
                                                               HttpServletRequest httpServletRequest){
 
-        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+        Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         boardService.addOneBoard(userId, requestDto);
 
@@ -54,7 +54,7 @@ public class BoardController {
     public ResponseEntity<String> updateboard(@PathVariable Long id,
                                             @Valid @RequestBody BoardUpdateRequestDto requestDto,
                                             HttpServletRequest httpServletRequest){
-        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+        Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         boardService.updateBoard(id, userId, requestDto);
 
@@ -65,7 +65,7 @@ public class BoardController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteBoard(@PathVariable Long id,
                                             HttpServletRequest httpServletRequest){
-        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+        Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         boardService.deleteBoard(id, userId);
 

@@ -34,13 +34,15 @@ public class UserController {
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto requestDto,
                                       HttpServletRequest httpServletRequest){
 
-        if(httpServletRequest.getSession(false) != null){
+        HttpSession session = httpServletRequest.getSession(false);
+
+        if(session != null){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 로그인된 사용자입니다.");
         }
 
         LoginResponseDto loginResponseDto = userService.login(requestDto);
 
-        HttpSession session = httpServletRequest.getSession();
+        session = httpServletRequest.getSession();
 
         session.setAttribute(Const.USER_ID, loginResponseDto.getId());
 
@@ -50,11 +52,7 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request,
                                          HttpServletResponse response){
-        HttpSession session = request.getSession(false);
-
-        if(session == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "로그인 상태가 아닙니다.");
-        }
+        HttpSession session = request.getSession();
 
         resetSessionAndCookies(session, response);
 
@@ -64,7 +62,7 @@ public class UserController {
     @GetMapping("/detail")
     public ResponseEntity<UserResponseDto> getOneUserDetail(HttpServletRequest httpServletRequest){
 
-        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+        Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         UserResponseDto userResponseDto = userService.getOneUserDetail(userId);
 
@@ -75,7 +73,7 @@ public class UserController {
     public ResponseEntity<String> updateUser(@Valid @RequestBody UserUpdateRequestDto requestDto,
                                            HttpServletRequest httpServletRequest){
 
-        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+        Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         userService.updateUser(userId, requestDto);
         
@@ -87,7 +85,7 @@ public class UserController {
                                            HttpServletRequest httpServletRequest,
                                            HttpServletResponse httpServletResponse){
 
-        Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
+        Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         userService.deleteUser(userId, requestDto);
 
