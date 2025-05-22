@@ -1,5 +1,6 @@
-package com.calendardev.calendardevelop.common;
+package com.calendardev.calendardevelop.config;
 
+import com.calendardev.calendardevelop.common.LoginFilter;
 import jakarta.servlet.Filter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
