@@ -36,7 +36,8 @@ public class LoginFilter implements Filter {
             if (session == null || session.getAttribute(Const.USER_ID) == null) {
                 int status = HttpStatus.BAD_REQUEST.value();
                 String message = "로그인을 먼저 해야합니다.";
-                String responseMessage = String.format("{\"status\": %d, \"message\": \"%s\"}",status, message);
+                String location = "HttpServlet";
+                String responseMessage = String.format("{\"status\": %d, \"message\": \"%s\", \"location\": \"%s\"}",status, message, location);
 
                 httpResponse.setStatus(status);
                 httpResponse.setContentType("application/json;charset=UTF-8");

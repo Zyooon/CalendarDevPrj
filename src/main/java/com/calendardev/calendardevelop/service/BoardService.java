@@ -1,6 +1,7 @@
 package com.calendardev.calendardevelop.service;
 
 import com.calendardev.calendardevelop.common.CustomException;
+import com.calendardev.calendardevelop.common.ErrorCode;
 import com.calendardev.calendardevelop.dto.board.BoardAddRequestDto;
 import com.calendardev.calendardevelop.dto.board.BoardDetailResponseDto;
 import com.calendardev.calendardevelop.dto.board.BoardResponseDto;
@@ -17,7 +18,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,14 +35,14 @@ public class BoardService {
     public void addOneBoard(Long userId, BoardAddRequestDto requestDto) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
+                .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Board board = new Board(requestDto.getTitle(), requestDto.getContents(), user);
 
         try{
             boardRepository.save(board);
         }catch (DataIntegrityViolationException e) {
-            throw new CustomException(HttpStatus.CONFLICT, "잘못된 내용이 전달되었습니다.");
+            throw new CustomException(ErrorCode.BAD_REQUEST_CONTENT);
         }
 
     }
@@ -54,17 +54,13 @@ public class BoardService {
 
         Page<Board> pagedBoardList = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
 
-        if(pagedBoardList.isEmpty()){
-            throw new CustomException(HttpStatus.NO_CONTENT, "게시글이 존재하지 않습니다.");
-        }
-
         return pagedBoardList.map(BoardResponseDto::new);
     }
 
     public BoardDetailResponseDto getOneBoardDetail(Long boardId, int page, int size) {
 
         Board findBoard = boardRepository.findById(boardId).
-                orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
+                orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(page, size);
 
@@ -81,10 +77,10 @@ public class BoardService {
     public void updateBoard(Long id, Long userId, BoardUpdateRequestDto requestDto) {
 
         Board findBoard = boardRepository.findById(id)
-                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
+                .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
 
         if(!findBoard.getUser().getId().equals(userId)){
-            throw new CustomException(HttpStatus.UNAUTHORIZED, "해당 사용자의 일정이 아닙니다.");
+            throw new CustomException(ErrorCode.POST_NOT_OWNED);
         }
 
         if(isBlank(requestDto.getTitle())){
@@ -99,10 +95,10 @@ public class BoardService {
     @Transactional
     public void deleteBoard(Long boardId, Long userId) {
         Board findBoard = boardRepository.findById(boardId)
-                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
+                .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
 
         if(!findBoard.getUser().getId().equals(userId)){
-            throw new CustomException(HttpStatus.FORBIDDEN, "본인의 게시글만 삭제할 수 있습니다.");
+            throw new CustomException(ErrorCode.POST_NOT_FOUND);
         }
 
         List<Comment> commentList = commentRepository.findAllByBoardId(boardId).stream().toList();

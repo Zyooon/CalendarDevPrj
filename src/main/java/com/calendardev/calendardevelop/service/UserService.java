@@ -1,6 +1,7 @@
 package com.calendardev.calendardevelop.service;
 
 import com.calendardev.calendardevelop.common.CustomException;
+import com.calendardev.calendardevelop.common.ErrorCode;
 import com.calendardev.calendardevelop.common.PasswordManager;
 import com.calendardev.calendardevelop.dto.user.*;
 import com.calendardev.calendardevelop.entity.Board;
@@ -11,7 +12,6 @@ import com.calendardev.calendardevelop.repository.CommentRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,17 +36,17 @@ public class UserService {
         try {
             userRepository.save(user);
         }catch (DataIntegrityViolationException e) {
-            throw new CustomException(HttpStatus.CONFLICT, "이미 존재하는 사용자입니다.");
+            throw new CustomException(ErrorCode.USER_ALREADY_EXISTS);
         }
     }
 
     public LoginResponseDto login(LoginRequestDto requestDto) {
 
         User user = userRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(()->new CustomException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
+                .orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if(!passwordManager.isPasswordMatch(requestDto.getPassword(), user.getPassword())){
-            throw new CustomException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
         return new LoginResponseDto(user.getId());
@@ -55,7 +55,7 @@ public class UserService {
     public UserResponseDto getOneUserDetail(Long id) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
+                .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return new UserResponseDto(user);
     }
@@ -64,10 +64,10 @@ public class UserService {
     public void updateUser(Long id, UserUpdateRequestDto requestDto) {
 
         User findUser = userRepository.findById(id)
-                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
+                .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if(!passwordManager.isPasswordMatch(requestDto.getOldPassword(),findUser.getPassword())){
-            throw new CustomException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
         if(requestDto.getUsername() != null && !requestDto.getUsername().isEmpty()){
@@ -85,10 +85,10 @@ public class UserService {
     public void deleteUser(Long id, UserDeleteRequestDto requestDto) {
 
         User findUser = userRepository.findById(id)
-                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
+                .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if(!passwordManager.isPasswordMatch(requestDto.getPassword(), findUser.getPassword())){
-            throw new CustomException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
         List<Comment> commentList = commentRepository.findAllByUserId(findUser.getId()).stream().toList();
