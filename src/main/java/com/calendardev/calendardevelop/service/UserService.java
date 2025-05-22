@@ -14,7 +14,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,23 +27,17 @@ public class UserService {
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
 
+    @Transactional
     public void signUp(SignUpRequestDto requestDto) {
 
+        String encodedPassword = passwordManager.encodePassword(requestDto.getPassword());
+
+        User user = new User(requestDto.getUsername(), requestDto.getEmail(), encodedPassword);
+
         try {
-            String encodedPassword = passwordManager.encodePassword(requestDto.getPassword());
-
-            User user = new User(requestDto.getUsername(), requestDto.getEmail(), encodedPassword);
-
             userRepository.save(user);
-
         }catch (DataIntegrityViolationException e) {
-
             throw new CustomException(HttpStatus.CONFLICT, "이미 존재하는 사용자입니다.");
-
-        } catch (Exception e) {
-
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "회원가입 중 오류가 발생했습니다.");
-
         }
     }
 
@@ -53,11 +46,11 @@ public class UserService {
         Optional<User> user = userRepository.findByEmail(requestDto.getEmail());
 
         if(user.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 회원 정보입니다.");
+            throw new CustomException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다.");
         }
 
         if(!passwordManager.isPasswordMatch(requestDto.getPassword(), user.get().getPassword())){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+            throw new CustomException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
         return new LoginResponseDto(user.get().getId());
@@ -66,7 +59,7 @@ public class UserService {
     public UserResponseDto getOneUserDetail(Long id) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 회원 정보입니다."));
+                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
 
         return new UserResponseDto(user);
     }
@@ -75,10 +68,10 @@ public class UserService {
     public void updateUser(Long id, UserUpdateRequestDto requestDto) {
 
         User findUser = userRepository.findById(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
+                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
 
         if(!passwordManager.isPasswordMatch(requestDto.getOldPassword(),findUser.getPassword())){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+            throw new CustomException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
         if(requestDto.getUsername() != null && !requestDto.getUsername().isEmpty()){
@@ -92,13 +85,14 @@ public class UserService {
 
     }
 
+    @Transactional
     public void deleteUser(Long id, UserDeleteRequestDto requestDto) {
 
         User findUser = userRepository.findById(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
+                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
 
         if(!passwordManager.isPasswordMatch(requestDto.getPassword(), findUser.getPassword())){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+            throw new CustomException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
         List<Comment> commentList = commentRepository.findAllByUserId(findUser.getId()).stream().toList();

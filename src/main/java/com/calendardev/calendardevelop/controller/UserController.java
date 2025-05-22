@@ -88,7 +88,6 @@ public class UserController {
 
         userService.deleteUser(userId, requestDto);
 
-        //유저 정보 삭제 후 세션 만료
         HttpSession session = httpServletRequest.getSession(false);
 
         if(session != null){

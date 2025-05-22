@@ -26,9 +26,10 @@ public class Board extends BaseEntity {
     public Board() {
     }
 
-    public Board(String title, String contents) {
+    public Board(String title, String contents, User user) {
         this.title = title;
         this.contents = contents;
+        this.user = user;
     }
 
     public void updateTitle(String title){

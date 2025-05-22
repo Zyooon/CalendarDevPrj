@@ -1,5 +1,6 @@
 package com.calendardev.calendardevelop.service;
 
+import com.calendardev.calendardevelop.common.CustomException;
 import com.calendardev.calendardevelop.dto.board.BoardAddRequestDto;
 import com.calendardev.calendardevelop.dto.board.BoardDetailResponseDto;
 import com.calendardev.calendardevelop.dto.board.BoardResponseDto;
@@ -11,14 +12,14 @@ import com.calendardev.calendardevelop.entity.User;
 import com.calendardev.calendardevelop.repository.BoardRepository;
 import com.calendardev.calendardevelop.repository.CommentRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,13 +35,15 @@ public class BoardService {
     public void addOneBoard(Long userId, BoardAddRequestDto requestDto) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
 
-        Board board = new Board(requestDto.getTitle(), requestDto.getContents());
+        Board board = new Board(requestDto.getTitle(), requestDto.getContents(), user);
 
-        board.setUser(user);
-
-        boardRepository.save(board);
+        try{
+            boardRepository.save(board);
+        }catch (DataIntegrityViolationException e) {
+            throw new CustomException(HttpStatus.CONFLICT, "잘못된 내용이 전달되었습니다.");
+        }
 
     }
 
@@ -51,13 +54,17 @@ public class BoardService {
 
         Page<Board> pagedBoardList = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
 
+        if(pagedBoardList.isEmpty()){
+            throw new CustomException(HttpStatus.NO_CONTENT, "게시글이 존재하지 않습니다.");
+        }
+
         return pagedBoardList.map(BoardResponseDto::new);
     }
 
     public BoardDetailResponseDto getOneBoard(Long boardId, int page, int size) {
 
         Board findBoard = boardRepository.findById(boardId).
-                orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
+                orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
 
         Pageable pageable = PageRequest.of(page, size);
 
@@ -74,10 +81,10 @@ public class BoardService {
     public void updateBoard(Long id, Long userId, BoardUpdateRequestDto requestDto) {
 
         Board findBoard = boardRepository.findById(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
+                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
 
         if(!findBoard.getUser().getId().equals(userId)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 사용자의 일정이 아닙니다.");
+            throw new CustomException(HttpStatus.UNAUTHORIZED, "해당 사용자의 일정이 아닙니다.");
         }
 
         if(isBlank(requestDto.getTitle())){
@@ -92,10 +99,10 @@ public class BoardService {
     @Transactional
     public void deleteBoard(Long boardId, Long userId) {
         Board findBoard = boardRepository.findById(boardId)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
+                .orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
 
         if(!findBoard.getUser().getId().equals(userId)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "본인의 게시글만 삭제할 수 있습니다.");
+            throw new CustomException(HttpStatus.FORBIDDEN, "본인의 게시글만 삭제할 수 있습니다.");
         }
 
         List<Comment> commentList = commentRepository.findAllByBoardId(boardId).stream().toList();
