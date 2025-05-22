@@ -25,14 +25,14 @@ public class BoardController {
     private final LoginManager loginManager;
 
     @PostMapping("/create")
-    public ResponseEntity<BoardDetailResponseDto> addOneBoard(@Valid @RequestBody BoardAddRequestDto requestDto,
+    public ResponseEntity<String> addOneBoard(@Valid @RequestBody BoardAddRequestDto requestDto,
                                                               HttpServletRequest httpServletRequest){
 
         Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
         boardService.addOneBoard(userId, requestDto);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>("게시글이 생성되었습니다.",HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -51,25 +51,25 @@ public class BoardController {
     }
 
     @PatchMapping("update/{id}")
-    public ResponseEntity<Void> updateboard(@PathVariable Long id,
+    public ResponseEntity<String> updateboard(@PathVariable Long id,
                                             @Valid @RequestBody BoardUpdateRequestDto requestDto,
                                             HttpServletRequest httpServletRequest){
         Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
         boardService.updateBoard(id, userId, requestDto);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("게시글이 수정되었습니다.",HttpStatus.OK);
 
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long id,
+    public ResponseEntity<String> deleteBoard(@PathVariable Long id,
                                             HttpServletRequest httpServletRequest){
         Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
         boardService.deleteBoard(id, userId);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("게시글이 삭제되었습니다.",HttpStatus.OK);
 
     }
 

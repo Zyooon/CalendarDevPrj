@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequestDto requestDto,
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto requestDto,
                                       HttpServletRequest httpServletRequest){
 
         if(httpServletRequest.getSession(false) != null){
@@ -44,18 +44,18 @@ public class UserController {
 
         session.setAttribute(Const.USER_ID, loginResponseDto.getId());
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("로그인 되었습니다.",HttpStatus.OK);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response){
         HttpSession session = request.getSession(false);
 
         if(session != null){
             resetSessionAndCookies(session, response);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("로그아웃 되었습니다.",HttpStatus.OK);
     }
 
     @GetMapping("/detail")
@@ -69,18 +69,18 @@ public class UserController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<Void> updateUser(@Valid @RequestBody UserUpdateRequestDto requestDto,
+    public ResponseEntity<String> updateUser(@Valid @RequestBody UserUpdateRequestDto requestDto,
                                            HttpServletRequest httpServletRequest){
 
         Long userId = loginManager.getUserIdOrElseNotLogin(httpServletRequest);
 
         userService.updateUser(userId, requestDto);
         
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("유저 정보가 변경되었습니다.",HttpStatus.OK);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Void> deleteUser(@Valid @RequestBody UserDeleteRequestDto requestDto,
+    public ResponseEntity<String> deleteUser(@Valid @RequestBody UserDeleteRequestDto requestDto,
                                            HttpServletRequest httpServletRequest,
                                            HttpServletResponse httpServletResponse){
 
@@ -94,7 +94,7 @@ public class UserController {
             resetSessionAndCookies(session, httpServletResponse);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("탈퇴 처리되었습니다.",HttpStatus.OK);
     }
 
 

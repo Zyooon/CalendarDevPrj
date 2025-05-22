@@ -18,7 +18,7 @@ public class CommentController {
     private final LoginManager loginManager;
 
     @PostMapping("/comment")
-    public ResponseEntity<Void> addComment(@PathVariable Long boardId,
+    public ResponseEntity<String> addComment(@PathVariable Long boardId,
                                            @RequestBody CommnetRequestDto requestDto,
                                            HttpServletRequest httpServletRequest){
 
@@ -26,12 +26,12 @@ public class CommentController {
 
         commentService.addComment(boardId, userId, requestDto);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>("댓글이 작성되었습니다.",HttpStatus.CREATED);
 
     }
 
     @PatchMapping("/comment/{commentId}")
-    public ResponseEntity<Void> updateComment(@PathVariable Long boardId,
+    public ResponseEntity<String> updateComment(@PathVariable Long boardId,
                                               @PathVariable Long commentId,
                                               @RequestBody CommnetRequestDto requestDto,
                                               HttpServletRequest httpServletRequest){
@@ -40,12 +40,12 @@ public class CommentController {
 
         commentService.updateComment(commentId, boardId, userId, requestDto);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("댓글이 수정되었습니다.",HttpStatus.OK);
 
     }
 
     @DeleteMapping("/comment/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long boardId,
+    public ResponseEntity<String> deleteComment(@PathVariable Long boardId,
                                               @PathVariable Long commentId,
                                               HttpServletRequest httpServletRequest){
 
@@ -53,7 +53,7 @@ public class CommentController {
 
         commentService.deleteComment(commentId, boardId, userId);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("댓글이 삭제되었습니다.",HttpStatus.OK);
 
     }
 }
