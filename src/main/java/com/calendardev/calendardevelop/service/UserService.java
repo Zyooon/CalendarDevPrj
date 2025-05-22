@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,17 +42,14 @@ public class UserService {
 
     public LoginResponseDto login(LoginRequestDto requestDto) {
 
-        Optional<User> user = userRepository.findByEmail(requestDto.getEmail());
+        User user = userRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(()->new CustomException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."));
 
-        if(user.isEmpty()){
-            throw new CustomException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다.");
-        }
-
-        if(!passwordManager.isPasswordMatch(requestDto.getPassword(), user.get().getPassword())){
+        if(!passwordManager.isPasswordMatch(requestDto.getPassword(), user.getPassword())){
             throw new CustomException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
-        return new LoginResponseDto(user.get().getId());
+        return new LoginResponseDto(user.getId());
     }
 
     public UserResponseDto getOneUserDetail(Long id) {

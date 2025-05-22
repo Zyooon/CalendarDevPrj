@@ -48,12 +48,15 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<String> logout(HttpServletRequest request,
+                                         HttpServletResponse response){
         HttpSession session = request.getSession(false);
 
-        if(session != null){
-            resetSessionAndCookies(session, response);
+        if(session == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "로그인 상태가 아닙니다.");
         }
+
+        resetSessionAndCookies(session, response);
 
         return new ResponseEntity<>("로그아웃 되었습니다.",HttpStatus.OK);
     }

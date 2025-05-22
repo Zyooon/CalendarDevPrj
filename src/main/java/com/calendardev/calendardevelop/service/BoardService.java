@@ -61,7 +61,7 @@ public class BoardService {
         return pagedBoardList.map(BoardResponseDto::new);
     }
 
-    public BoardDetailResponseDto getOneBoard(Long boardId, int page, int size) {
+    public BoardDetailResponseDto getOneBoardDetail(Long boardId, int page, int size) {
 
         Board findBoard = boardRepository.findById(boardId).
                 orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
