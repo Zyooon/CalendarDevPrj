@@ -2,8 +2,6 @@ package com.calendardev.calendardevelop.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Entity
@@ -26,11 +24,8 @@ public class Comment extends BaseEntity{
     public Comment() {
     }
 
-    public Comment(String contents) {
+    public Comment(String contents, User user, Board board) {
         this.contents = contents;
-    }
-
-    public void setUserAndBoard(User user, Board board){
         this.user = user;
         this.board = board;
     }

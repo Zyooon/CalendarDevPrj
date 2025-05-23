@@ -20,7 +20,7 @@ public class SecurityConfig {
     public FilterRegistrationBean<LoginFilter> loginFilter() {
         FilterRegistrationBean<LoginFilter> filterRegistrationBean = new FilterRegistrationBean<>();
         filterRegistrationBean.setFilter(new LoginFilter()); // Filter 등록
-        filterRegistrationBean.setOrder(1); // Filter 순서 2 설정
+        filterRegistrationBean.setOrder(1); // Filter 순서 1 설정
         filterRegistrationBean.addUrlPatterns("/*"); // 전체 URL에 Filter 적용
         return filterRegistrationBean;
     }

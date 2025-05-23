@@ -11,6 +11,7 @@ import com.calendardev.calendardevelop.repository.BoardRepository;
 import com.calendardev.calendardevelop.repository.CommentRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,18 +28,19 @@ public class UserService {
     private final BoardRepository boardRepository;
 
     @Transactional
-    public void signUp(SignUpRequestDto requestDto) {
+    public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
 
         String encodedPassword = passwordManager.encodePassword(requestDto.getPassword());
 
         User user = new User(requestDto.getUsername(), requestDto.getEmail(), encodedPassword);
 
-        saveUserOrElseThrow(user);
+        return new SignUpResponseDto(saveUserAndGetIdOrThrow(user));
+
     }
 
-    private void saveUserOrElseThrow(User user){
+    private Long saveUserAndGetIdOrThrow(User user){
         try {
-            userRepository.save(user);
+            return userRepository.save(user).getId();
         }catch (DataIntegrityViolationException e) {
             throw new CustomException(ErrorCode.USER_ALREADY_EXISTS);
         }
@@ -54,7 +56,7 @@ public class UserService {
         return new LoginResponseDto(user.getId());
     }
 
-    public UserResponseDto getOneUserDetail(Long id) {
+    public UserResponseDto getUserDetail(Long id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -70,21 +72,21 @@ public class UserService {
 
         passwordManager.validatePasswordMatchOrElseThrow(requestDto.getOldPassword(), findUser.getPassword());
 
-        updateUsernameIfIsExist(findUser, requestDto);
+        updateUsername(findUser, requestDto);
 
-        updatePasswordIfIsExist(findUser, requestDto);
+        updateEncodedPassword(findUser, requestDto);
     }
 
     //유저 이름 업데이트
-    private void updateUsernameIfIsExist(User findUser, UserUpdateRequestDto requestDto) {
-        if(requestDto.getUsername() != null && !requestDto.getUsername().isEmpty()){
+    private void updateUsername(User findUser, UserUpdateRequestDto requestDto) {
+        if(Strings.isBlank(requestDto.getUsername())){
             findUser.updateUsername(requestDto.getUsername());
         }
     }
 
-    //비밀번호 업데이트
-    private void updatePasswordIfIsExist(User findUser, UserUpdateRequestDto requestDto) {
-        if(requestDto.getNewPassword() != null && !requestDto.getNewPassword().isEmpty()){
+    //비밀번호 암호화 후 업데이트
+    private void updateEncodedPassword(User findUser, UserUpdateRequestDto requestDto) {
+        if(!Strings.isBlank(requestDto.getNewPassword())){
             String encodedNewPassword = passwordManager.encodePassword(requestDto.getNewPassword());
             findUser.updatePassword(encodedNewPassword);
         }

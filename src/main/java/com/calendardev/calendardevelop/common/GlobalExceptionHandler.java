@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.stream.Collectors;
 
+//전역 예외 처리기
 @RestControllerAdvice
 public class GlobalExceptionHandler{
 
@@ -27,6 +28,7 @@ public class GlobalExceptionHandler{
         return ResponseEntity.status(e.getStatus()).body(exceptionDto);
     }
 
+    //Valid 에러. Servlet 유효성 검사 에러
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionDto> handleValidationException(MethodArgumentNotValidException e) {
         String errorMessage = e.getBindingResult().getFieldErrors().stream()

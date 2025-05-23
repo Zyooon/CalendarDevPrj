@@ -17,9 +17,10 @@ public class LoginManager {
     }
 
     //로그인 상태 확인
+    //필터에서 확인하지만 Login 메서드는 WHITE_LIST 에 포함되어 직접 확인
     public void validLoginStatus(HttpServletRequest httpServletRequest){
         HttpSession session = httpServletRequest.getSession(false);
-        if(session == null){
+        if(session != null){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 로그인된 사용자입니다.");
         }
     }
@@ -41,6 +42,5 @@ public class LoginManager {
         cookie.setMaxAge(0); // 즉시 만료
         response.addCookie(cookie);
     }
-
 
 }

@@ -2,6 +2,7 @@ package com.calendardev.calendardevelop.service;
 
 import com.calendardev.calendardevelop.common.CustomException;
 import com.calendardev.calendardevelop.common.ErrorCode;
+import com.calendardev.calendardevelop.dto.comment.CommentAddReponseDto;
 import com.calendardev.calendardevelop.dto.comment.CommnetRequestDto;
 import com.calendardev.calendardevelop.entity.Board;
 import com.calendardev.calendardevelop.entity.Comment;
@@ -10,6 +11,7 @@ import com.calendardev.calendardevelop.repository.BoardRepository;
 import com.calendardev.calendardevelop.repository.CommentRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +24,7 @@ public class CommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void addComment(Long boardId, Long userId, CommnetRequestDto requestDto) {
+    public CommentAddReponseDto addComment(Long boardId, Long userId, CommnetRequestDto requestDto) {
 
         User findUser = userRepository.findById(userId)
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -30,12 +32,11 @@ public class CommentService {
         Board findBoard = boardRepository.findById(boardId).
                 orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-        Comment comment = new Comment(requestDto.getContents());
+        Comment comment = new Comment(requestDto.getContents(), findUser, findBoard);
 
-        comment.setUserAndBoard(findUser, findBoard);
+        Long commentId = commentRepository.save(comment).getId();
 
-        commentRepository.save(comment);
-
+        return new CommentAddReponseDto(commentId);
     }
 
     @Transactional
@@ -49,7 +50,7 @@ public class CommentService {
     }
 
     private void saveCommentIfIsNotBlank(Comment findComment, CommnetRequestDto requestDto) {
-        if(isBlank(requestDto.getContents())){
+        if(!Strings.isBlank(requestDto.getContents())){
             findComment.updateContents(requestDto.getContents());
         }
     }

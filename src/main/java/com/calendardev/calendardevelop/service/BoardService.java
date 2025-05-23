@@ -2,10 +2,7 @@ package com.calendardev.calendardevelop.service;
 
 import com.calendardev.calendardevelop.common.CustomException;
 import com.calendardev.calendardevelop.common.ErrorCode;
-import com.calendardev.calendardevelop.dto.board.BoardAddRequestDto;
-import com.calendardev.calendardevelop.dto.board.BoardDetailResponseDto;
-import com.calendardev.calendardevelop.dto.board.BoardResponseDto;
-import com.calendardev.calendardevelop.dto.board.BoardUpdateRequestDto;
+import com.calendardev.calendardevelop.dto.board.*;
 import com.calendardev.calendardevelop.dto.comment.CommentResponseDto;
 import com.calendardev.calendardevelop.entity.Board;
 import com.calendardev.calendardevelop.entity.Comment;
@@ -14,6 +11,7 @@ import com.calendardev.calendardevelop.repository.BoardRepository;
 import com.calendardev.calendardevelop.repository.CommentRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,19 +30,19 @@ public class BoardService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public void addOneBoard(Long userId, BoardAddRequestDto requestDto) {
+    public BoardAddResponseDto addOneBoard(Long userId, BoardAddRequestDto requestDto) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Board board = new Board(requestDto.getTitle(), requestDto.getContents(), user);
 
-        saveBoardByUserIdOrElseThrow(board);
+        return new BoardAddResponseDto(saveBoardByUserIdOrElseThrow(board));
     }
 
-    private void saveBoardByUserIdOrElseThrow(Board board) {
+    private Long saveBoardByUserIdOrElseThrow(Board board) {
         try{
-            boardRepository.save(board);
+            return boardRepository.save(board).getId();
         }catch (DataIntegrityViolationException e) {
             throw new CustomException(ErrorCode.BAD_REQUEST_CONTENT);
         }
@@ -106,10 +104,6 @@ public class BoardService {
         boardRepository.delete(findBoard);
     }
 
-    private boolean isBlank(String str){
-        return str != null && !str.trim().isEmpty();
-    }
-
     private void validateBoardOwner(Board findBoard, Long userId){
         if(!findBoard.getUser().getId().equals(userId)){
             throw new CustomException(ErrorCode.POST_NOT_OWNED);
@@ -117,11 +111,11 @@ public class BoardService {
     }
 
     private void updateTitleAndContents(Board findBoard, BoardUpdateRequestDto requestDto) {
-        if(isBlank(requestDto.getTitle())){
+        if(!Strings.isBlank(requestDto.getTitle())){
             findBoard.updateTitle(requestDto.getTitle());
         }
 
-        if(isBlank(requestDto.getContents())){
+        if(!Strings.isBlank(requestDto.getContents())){
             findBoard.updateContents(requestDto.getContents());
         }
     }
