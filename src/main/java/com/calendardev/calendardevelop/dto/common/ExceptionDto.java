@@ -1,4 +1,4 @@
-package com.calendardev.calendardevelop.dto.exception;
+package com.calendardev.calendardevelop.dto.common;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

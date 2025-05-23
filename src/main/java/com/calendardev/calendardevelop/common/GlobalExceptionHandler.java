@@ -1,6 +1,6 @@
 package com.calendardev.calendardevelop.common;
 
-import com.calendardev.calendardevelop.dto.exception.ExceptionDto;
+import com.calendardev.calendardevelop.dto.common.ExceptionDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
