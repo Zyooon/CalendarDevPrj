@@ -65,9 +65,8 @@ public class CommentService {
         }
 
         if(!findComment.get().getUser().getId().equals(userId)){
-            throw new CustomException(ErrorCode.COMMENT_NOT_FOUND);
+            throw new CustomException(ErrorCode.COMMENT_NOT_OWNED);
         }
-
 
         commentRepository.delete(findComment.get());
 

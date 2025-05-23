@@ -98,7 +98,7 @@ public class BoardService {
                 .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
 
         if(!findBoard.getUser().getId().equals(userId)){
-            throw new CustomException(ErrorCode.POST_NOT_FOUND);
+            throw new CustomException(ErrorCode.POST_NOT_OWNED);
         }
 
         List<Comment> commentList = commentRepository.findAllByBoardId(boardId).stream().toList();
