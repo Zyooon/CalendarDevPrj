@@ -4,6 +4,7 @@ import com.calendardev.calendardevelop.common.LoginManager;
 import com.calendardev.calendardevelop.dto.comment.CommnetRequestDto;
 import com.calendardev.calendardevelop.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class CommentController {
 
     @PostMapping("/comment")
     public ResponseEntity<String> addComment(@PathVariable Long boardId,
-                                           @RequestBody CommnetRequestDto requestDto,
+                                           @Valid @RequestBody CommnetRequestDto requestDto,
                                            HttpServletRequest httpServletRequest){
 
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
@@ -33,7 +34,7 @@ public class CommentController {
     @PatchMapping("/comment/{commentId}")
     public ResponseEntity<String> updateComment(@PathVariable Long boardId,
                                               @PathVariable Long commentId,
-                                              @RequestBody CommnetRequestDto requestDto,
+                                              @Valid @RequestBody CommnetRequestDto requestDto,
                                               HttpServletRequest httpServletRequest){
 
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
