@@ -16,8 +16,8 @@ public class GlobalExceptionHandler{
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionDto> handleAllException(Exception e) {
         String location = getExceptionOccurredLocation(e);
-        ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.BAD_REQUEST, e.getMessage(), location);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionDto);
+        ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), location);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionDto);
     }
 
     @ExceptionHandler(CustomException.class)

@@ -37,7 +37,7 @@ public class BoardController {
 
     @GetMapping
     public ResponseEntity<List<BoardResponseDto>> getPagedBoards(@RequestParam(defaultValue = "1") int page,
-                                                                 @RequestParam(defaultValue = "5") int size){
+                                                                 @RequestParam(defaultValue = "10") int size){
         Page<BoardResponseDto> pagedBoardList = boardService.getPagedBoards(page-1, size);
         return new ResponseEntity<>(pagedBoardList.getContent(), HttpStatus.OK);
     }
@@ -45,7 +45,7 @@ public class BoardController {
     @GetMapping("/detail/{id}")
     public ResponseEntity<BoardDetailResponseDto> getOneBoardDetail(@PathVariable Long id,
                                                                     @RequestParam(defaultValue = "1") int page,
-                                                                    @RequestParam(defaultValue = "5") int size){
+                                                                    @RequestParam(defaultValue = "10") int size){
         BoardDetailResponseDto board = boardService.getOneBoardDetail(id, page-1, size);
         return new ResponseEntity<>(board, HttpStatus.OK);
     }
