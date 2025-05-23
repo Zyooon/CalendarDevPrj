@@ -1,10 +1,7 @@
 package com.calendardev.calendardevelop.controller;
 
 import com.calendardev.calendardevelop.common.LoginManager;
-import com.calendardev.calendardevelop.dto.board.BoardAddRequestDto;
-import com.calendardev.calendardevelop.dto.board.BoardDetailResponseDto;
-import com.calendardev.calendardevelop.dto.board.BoardResponseDto;
-import com.calendardev.calendardevelop.dto.board.BoardUpdateRequestDto;
+import com.calendardev.calendardevelop.dto.board.*;
 import com.calendardev.calendardevelop.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -17,22 +14,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/calendar/board")
+@RequestMapping("/calendar/boards")
 @RequiredArgsConstructor
 public class BoardController {
 
     private final BoardService boardService;
     private final LoginManager loginManager;
 
-    @PostMapping("/create")
-    public ResponseEntity<String> addOneBoard(@Valid @RequestBody BoardAddRequestDto requestDto,
-                                                              HttpServletRequest httpServletRequest){
+    @PostMapping("/write")
+    public ResponseEntity<BoardAddResponseDto> addOneBoard(@Valid @RequestBody BoardAddRequestDto requestDto,
+                                                           HttpServletRequest httpServletRequest){
 
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
-        boardService.addOneBoard(userId, requestDto);
+        BoardAddResponseDto responseDto = boardService.addOneBoard(userId, requestDto);
 
-        return new ResponseEntity<>("게시글이 생성되었습니다.",HttpStatus.CREATED);
+        return new ResponseEntity<>(responseDto ,HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -42,7 +39,7 @@ public class BoardController {
         return new ResponseEntity<>(pagedBoardList.getContent(), HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<BoardDetailResponseDto> getOneBoardDetail(@PathVariable Long id,
                                                                     @RequestParam(defaultValue = "1") int page,
                                                                     @RequestParam(defaultValue = "10") int size){
@@ -50,7 +47,7 @@ public class BoardController {
         return new ResponseEntity<>(board, HttpStatus.OK);
     }
 
-    @PatchMapping("update/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<String> updateBoard(@PathVariable Long id,
                                             @Valid @RequestBody BoardUpdateRequestDto requestDto,
                                             HttpServletRequest httpServletRequest){
@@ -62,7 +59,7 @@ public class BoardController {
 
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBoard(@PathVariable Long id,
                                             HttpServletRequest httpServletRequest){
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);

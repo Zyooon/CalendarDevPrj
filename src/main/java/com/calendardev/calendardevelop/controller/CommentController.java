@@ -1,6 +1,7 @@
 package com.calendardev.calendardevelop.controller;
 
 import com.calendardev.calendardevelop.common.LoginManager;
+import com.calendardev.calendardevelop.dto.comment.CommentAddReponseDto;
 import com.calendardev.calendardevelop.dto.comment.CommnetRequestDto;
 import com.calendardev.calendardevelop.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,27 +12,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/calendar/board/{boardId}")
+@RequestMapping("/calendar/boards/{boardId}/comments")
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
     private final LoginManager loginManager;
 
-    @PostMapping("/comment")
-    public ResponseEntity<String> addComment(@PathVariable Long boardId,
+    @PostMapping
+    public ResponseEntity<CommentAddReponseDto> addComment(@PathVariable Long boardId,
                                            @Valid @RequestBody CommnetRequestDto requestDto,
                                            HttpServletRequest httpServletRequest){
 
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
-        commentService.addComment(boardId, userId, requestDto);
+        CommentAddReponseDto reponseDto = commentService.addComment(boardId, userId, requestDto);
 
-        return new ResponseEntity<>("댓글이 작성되었습니다.",HttpStatus.CREATED);
+        return new ResponseEntity<>(reponseDto, HttpStatus.CREATED);
 
     }
 
-    @PatchMapping("/comment/{commentId}")
+    @PatchMapping("/{commentId}")
     public ResponseEntity<String> updateComment(@PathVariable Long boardId,
                                               @PathVariable Long commentId,
                                               @Valid @RequestBody CommnetRequestDto requestDto,
@@ -45,7 +46,7 @@ public class CommentController {
 
     }
 
-    @DeleteMapping("/comment/{commentId}")
+    @DeleteMapping("/{commentId}")
     public ResponseEntity<String> deleteComment(@PathVariable Long boardId,
                                               @PathVariable Long commentId,
                                               HttpServletRequest httpServletRequest){

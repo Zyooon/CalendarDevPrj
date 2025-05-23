@@ -20,10 +20,10 @@ public class UserController {
     private final LoginManager loginManager;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@Valid @RequestBody SignUpRequestDto requestDto){
-        userService.signUp(requestDto);
+    public ResponseEntity<SignUpResponseDto> signUp(@Valid @RequestBody SignUpRequestDto requestDto){
+        SignUpResponseDto responseDto = userService.signUp(requestDto);
 
-        return new ResponseEntity<>("회원가입에 성공했습니다.", HttpStatus.CREATED);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
@@ -47,17 +47,17 @@ public class UserController {
         return new ResponseEntity<>("로그아웃 되었습니다.",HttpStatus.OK);
     }
 
-    @GetMapping("/detail")
-    public ResponseEntity<UserResponseDto> getOneUserDetail(HttpServletRequest httpServletRequest){
+    @GetMapping
+    public ResponseEntity<UserResponseDto> getUserDetail(HttpServletRequest httpServletRequest){
 
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
-        UserResponseDto userResponseDto = userService.getOneUserDetail(userId);
+        UserResponseDto userResponseDto = userService.getUserDetail(userId);
 
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
-    @PatchMapping("/update")
+    @PatchMapping
     public ResponseEntity<String> updateUser(@Valid @RequestBody UserUpdateRequestDto requestDto,
                                            HttpServletRequest httpServletRequest){
 
@@ -68,7 +68,7 @@ public class UserController {
         return new ResponseEntity<>("유저 정보가 변경되었습니다.",HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     public ResponseEntity<String> deleteUser(@Valid @RequestBody UserDeleteRequestDto requestDto,
                                            HttpServletRequest httpServletRequest,
                                            HttpServletResponse httpServletResponse){
