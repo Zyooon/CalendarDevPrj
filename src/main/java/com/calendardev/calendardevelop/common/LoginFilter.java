@@ -29,24 +29,31 @@ public class LoginFilter implements Filter {
         String requestURI = httpRequest.getRequestURI();
 
         if (!isWhiteList(requestURI)) {
-            HttpSession session = httpRequest.getSession(false);
-
             //Filter Spring 예외처리의 범위 밖이기 때문에 Global 예외 처리로 잡을 수 없다
             //직접 수동으로 메세지를 남겨준다.
-            if (session == null || session.getAttribute(Const.USER_ID) == null) {
-                int status = HttpStatus.BAD_REQUEST.value();
-                String message = "로그인을 먼저 해야합니다.";
-                String location = "HttpServlet";
-                String responseMessage = String.format("{\"status\": %d, \"message\": \"%s\", \"location\": \"%s\"}",status, message, location);
-
-                httpResponse.setStatus(status);
-                httpResponse.setContentType("application/json;charset=UTF-8");
-                httpResponse.getWriter().write(responseMessage);
-                return;
-            }
+            if(isAlreadyLogin(httpRequest, httpResponse)) return;
         }
 
         chain.doFilter(request, response);
+    }
+
+    private boolean isAlreadyLogin(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+
+        HttpSession session = httpRequest.getSession(false);
+
+        if (session == null || session.getAttribute(Const.USER_ID) == null) {
+            int status = HttpStatus.BAD_REQUEST.value();
+            String message = "로그인을 먼저 해야합니다.";
+            String location = "HttpServlet";
+            String responseMessage = String.format("{\"status\": %d, \"message\": \"%s\", \"location\": \"%s\"}",status, message, location);
+
+            httpResponse.setStatus(status);
+            httpResponse.setContentType("application/json;charset=UTF-8");
+            httpResponse.getWriter().write(responseMessage);
+            return true;
+        }
+
+        return false;
     }
 
     private boolean isWhiteList(String requestURI) {

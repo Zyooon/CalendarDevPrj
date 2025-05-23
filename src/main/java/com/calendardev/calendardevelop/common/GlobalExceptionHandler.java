@@ -45,6 +45,8 @@ public class GlobalExceptionHandler{
         return ResponseEntity.status(status).body(exceptionDto);
     }
 
+    //에러 메세지에 예외 발생 지점 같이 보내준다.
+    //클래스명 + 메서드명 + Line 번호
     private String getExceptionOccurredLocation(Throwable e) {
         if (e == null || e.getStackTrace().length == 0) return "Unknown Location";
         StackTraceElement element = e.getStackTrace()[0];

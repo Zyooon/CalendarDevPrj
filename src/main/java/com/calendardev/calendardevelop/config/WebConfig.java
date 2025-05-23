@@ -1,7 +1,6 @@
 package com.calendardev.calendardevelop.config;
 
 import com.calendardev.calendardevelop.common.LoginFilter;
-import jakarta.servlet.Filter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,9 +8,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class WebConfig {
 
+    //로그인 필터 처리
     @Bean
-    public FilterRegistrationBean loginFilter() {
-        FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<>();
+    public FilterRegistrationBean<LoginFilter> loginFilter() {
+        FilterRegistrationBean<LoginFilter> filterRegistrationBean = new FilterRegistrationBean<>();
         filterRegistrationBean.setFilter(new LoginFilter()); // Filter 등록
         filterRegistrationBean.setOrder(1); // Filter 순서 2 설정
         filterRegistrationBean.addUrlPatterns("/*"); // 전체 URL에 Filter 적용

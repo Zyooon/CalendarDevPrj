@@ -14,8 +14,10 @@ public class PasswordManager {
         return passwordEncoder.encode(rawPassword);
     }
 
-    public boolean isPasswordMatch(String inputPassword, String encodedPassword){
-        return passwordEncoder.matches(inputPassword, encodedPassword);
+    public void validatePasswordMatchOrElseThrow(String inputPassword, String encodedPassword){
+        if(!passwordEncoder.matches(inputPassword, encodedPassword)){
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
+        }
     }
 
 }

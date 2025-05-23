@@ -1,19 +1,15 @@
 package com.calendardev.calendardevelop.controller;
 
-import com.calendardev.calendardevelop.common.Const;
 import com.calendardev.calendardevelop.common.LoginManager;
 import com.calendardev.calendardevelop.dto.user.*;
 import com.calendardev.calendardevelop.service.UserService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/calendar/users")
@@ -33,18 +29,11 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto requestDto,
                                       HttpServletRequest httpServletRequest){
-
-        HttpSession session = httpServletRequest.getSession(false);
-
-        if(session != null){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 로그인된 사용자입니다.");
-        }
+        loginManager.validLoginStatus(httpServletRequest);
 
         LoginResponseDto loginResponseDto = userService.login(requestDto);
 
-        session = httpServletRequest.getSession();
-
-        session.setAttribute(Const.USER_ID, loginResponseDto.getId());
+        loginManager.setUserIdToSession(httpServletRequest, loginResponseDto.getId());
 
         return new ResponseEntity<>("로그인 되었습니다.",HttpStatus.OK);
     }
@@ -52,9 +41,8 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request,
                                          HttpServletResponse response){
-        HttpSession session = request.getSession();
 
-        resetSessionAndCookies(session, response);
+        loginManager.resetSessionAndCookies(request, response);
 
         return new ResponseEntity<>("로그아웃 되었습니다.",HttpStatus.OK);
     }
@@ -89,25 +77,9 @@ public class UserController {
 
         userService.deleteUser(userId, requestDto);
 
-        HttpSession session = httpServletRequest.getSession(false);
-
-        if(session != null){
-            resetSessionAndCookies(session, httpServletResponse);
-        }
+        loginManager.resetSessionAndCookies(httpServletRequest, httpServletResponse);
 
         return new ResponseEntity<>("탈퇴 처리되었습니다.",HttpStatus.OK);
-    }
-
-
-
-    private void resetSessionAndCookies(HttpSession session, HttpServletResponse response){
-        //세션 만료
-        session.invalidate();
-        // postman 에서는 서버에서 자체적으로 쿠키(JSESSIONID)를 계속 보냄
-        Cookie cookie = new Cookie("JSESSIONID", null);
-        cookie.setPath("/");
-        cookie.setMaxAge(0); // 즉시 만료
-        response.addCookie(cookie);
     }
 
 }

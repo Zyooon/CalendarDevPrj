@@ -39,13 +39,17 @@ public class BoardService {
 
         Board board = new Board(requestDto.getTitle(), requestDto.getContents(), user);
 
+        saveBoardByUserIdOrElseThrow(board);
+    }
+
+    private void saveBoardByUserIdOrElseThrow(Board board) {
         try{
             boardRepository.save(board);
         }catch (DataIntegrityViolationException e) {
             throw new CustomException(ErrorCode.BAD_REQUEST_CONTENT);
         }
-
     }
+
 
     @Transactional(readOnly = true)
     public Page<BoardResponseDto> getPagedBoards(int page, int size) {
@@ -64,13 +68,17 @@ public class BoardService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Comment> pagedCommentList = commentRepository.findAllByBoardIdOrderByCreatedAtDesc(boardId, pageable);
-
-        List<CommentResponseDto> commentList = pagedCommentList.stream()
-                .map(CommentResponseDto::new)
-                .toList();
+        List<CommentResponseDto> commentList = getPagedCommentsByBoardId(boardId, pageable);
 
         return new BoardDetailResponseDto(findBoard, commentList);
+    }
+
+    private List<CommentResponseDto> getPagedCommentsByBoardId(Long boardId, Pageable pageable) {
+        Page<Comment> pagedCommentList = commentRepository.findAllByBoardIdOrderByCreatedAtDesc(boardId, pageable);
+
+        return pagedCommentList.stream()
+                .map(CommentResponseDto::new)
+                .toList();
     }
 
     @Transactional
@@ -79,10 +87,36 @@ public class BoardService {
         Board findBoard = boardRepository.findById(id)
                 .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
 
+        validateBoardOwner(findBoard, userId);
+
+        updateTitleAndContents(findBoard, requestDto);
+    }
+
+
+
+    @Transactional
+    public void deleteBoard(Long boardId, Long userId) {
+        Board findBoard = boardRepository.findById(boardId)
+                .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        validateBoardOwner(findBoard, userId);
+
+        deleteAllCommentListIfExist(boardId);
+
+        boardRepository.delete(findBoard);
+    }
+
+    private boolean isBlank(String str){
+        return str != null && !str.trim().isEmpty();
+    }
+
+    private void validateBoardOwner(Board findBoard, Long userId){
         if(!findBoard.getUser().getId().equals(userId)){
             throw new CustomException(ErrorCode.POST_NOT_OWNED);
         }
+    }
 
+    private void updateTitleAndContents(Board findBoard, BoardUpdateRequestDto requestDto) {
         if(isBlank(requestDto.getTitle())){
             findBoard.updateTitle(requestDto.getTitle());
         }
@@ -92,26 +126,9 @@ public class BoardService {
         }
     }
 
-    @Transactional
-    public void deleteBoard(Long boardId, Long userId) {
-        Board findBoard = boardRepository.findById(boardId)
-                .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
-
-        if(!findBoard.getUser().getId().equals(userId)){
-            throw new CustomException(ErrorCode.POST_NOT_OWNED);
-        }
-
+    private void deleteAllCommentListIfExist(Long boardId){
         List<Comment> commentList = commentRepository.findAllByBoardId(boardId).stream().toList();
 
-        if(!commentList.isEmpty()){
-            commentRepository.deleteAll(commentList);
-        }
-
-        boardRepository.delete(findBoard);
-    }
-
-    private boolean isBlank(String str){
-
-        return str != null && !str.trim().isEmpty();
+        if(!commentList.isEmpty()){commentRepository.deleteAll(commentList);}
     }
 }

@@ -33,6 +33,10 @@ public class UserService {
 
         User user = new User(requestDto.getUsername(), requestDto.getEmail(), encodedPassword);
 
+        saveUserOrElseThrow(user);
+    }
+
+    private void saveUserOrElseThrow(User user){
         try {
             userRepository.save(user);
         }catch (DataIntegrityViolationException e) {
@@ -45,9 +49,7 @@ public class UserService {
         User user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if(!passwordManager.isPasswordMatch(requestDto.getPassword(), user.getPassword())){
-            throw new CustomException(ErrorCode.INVALID_PASSWORD);
-        }
+        passwordManager.validatePasswordMatchOrElseThrow(requestDto.getPassword(), user.getPassword());
 
         return new LoginResponseDto(user.getId());
     }
@@ -66,19 +68,26 @@ public class UserService {
         User findUser = userRepository.findById(id)
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if(!passwordManager.isPasswordMatch(requestDto.getOldPassword(),findUser.getPassword())){
-            throw new CustomException(ErrorCode.INVALID_PASSWORD);
-        }
+        passwordManager.validatePasswordMatchOrElseThrow(requestDto.getOldPassword(), findUser.getPassword());
 
+        updateUsernameIfIsExist(findUser, requestDto);
+
+        updatePasswordIfIsExist(findUser, requestDto);
+    }
+
+    //유저 이름 업데이트
+    private void updateUsernameIfIsExist(User findUser, UserUpdateRequestDto requestDto) {
         if(requestDto.getUsername() != null && !requestDto.getUsername().isEmpty()){
             findUser.updateUsername(requestDto.getUsername());
         }
+    }
 
+    //비밀번호 업데이트
+    private void updatePasswordIfIsExist(User findUser, UserUpdateRequestDto requestDto) {
         if(requestDto.getNewPassword() != null && !requestDto.getNewPassword().isEmpty()){
             String encodedNewPassword = passwordManager.encodePassword(requestDto.getNewPassword());
             findUser.updatePassword(encodedNewPassword);
         }
-
     }
 
     @Transactional
@@ -87,23 +96,29 @@ public class UserService {
         User findUser = userRepository.findById(id)
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if(!passwordManager.isPasswordMatch(requestDto.getPassword(), findUser.getPassword())){
-            throw new CustomException(ErrorCode.INVALID_PASSWORD);
-        }
+        passwordManager.validatePasswordMatchOrElseThrow(requestDto.getPassword(), findUser.getPassword());
 
-        List<Comment> commentList = commentRepository.findAllByUserId(findUser.getId()).stream().toList();
+        deleteAllCommentsByUserId(findUser);
 
-        if(!commentList.isEmpty()){
-            commentRepository.deleteAll(commentList);
-        }
+        deleteAllBoardsByUserId(findUser);
 
+        userRepository.delete(findUser);
+    }
+
+    private void deleteAllBoardsByUserId(User findUser) {
         List<Board> boardList = boardRepository.findAllByUserId(findUser.getId()).stream().toList();
 
         if(!boardList.isEmpty()){
             boardRepository.deleteAll(boardList);
         }
+    }
 
-        userRepository.delete(findUser);
+    private void deleteAllCommentsByUserId(User findUser){
+        List<Comment> commentList = commentRepository.findAllByUserId(findUser.getId()).stream().toList();
+
+        if(!commentList.isEmpty()){
+            commentRepository.deleteAll(commentList);
+        }
     }
 
 }

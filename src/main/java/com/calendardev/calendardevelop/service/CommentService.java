@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -42,39 +40,37 @@ public class CommentService {
 
     @Transactional
     public void updateComment(Long commentId, Long boardId, Long userId, CommnetRequestDto requestDto) {
-        Optional<Comment> findComment = commentRepository.findByIdAndBoardId(commentId, boardId);
+        Comment findComment = commentRepository.findByIdAndBoardId(commentId, boardId)
+                .orElseThrow(()-> new CustomException(ErrorCode.COMMENT_NOT_FOUND));;
 
-        if(findComment.isEmpty()){
-            throw new CustomException(ErrorCode.COMMENT_NOT_FOUND);
-        }
+        validateCommentOwner(findComment, userId);
 
-        if(!findComment.get().getUser().getId().equals(userId)){
-            throw new CustomException(ErrorCode.POST_NOT_OWNED);
-        }
+        saveCommentIfIsNotBlank(findComment, requestDto);
+    }
 
+    private void saveCommentIfIsNotBlank(Comment findComment, CommnetRequestDto requestDto) {
         if(isBlank(requestDto.getContents())){
-            findComment.get().updateContents(requestDto.getContents());
+            findComment.updateContents(requestDto.getContents());
         }
-
     }
+
     public void deleteComment(Long commentId, Long boardId, Long userId) {
-        Optional<Comment> findComment = commentRepository.findByIdAndBoardId(commentId, boardId);
+        Comment findComment = commentRepository.findByIdAndBoardId(commentId, boardId)
+                .orElseThrow(()-> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
-        if(findComment.isEmpty()){
-            throw new CustomException(ErrorCode.COMMENT_NOT_FOUND);
-        }
+        validateCommentOwner(findComment, userId);
 
-        if(!findComment.get().getUser().getId().equals(userId)){
-            throw new CustomException(ErrorCode.COMMENT_NOT_OWNED);
-        }
-
-        commentRepository.delete(findComment.get());
+        commentRepository.delete(findComment);
 
     }
+    //String null 체크
     private boolean isBlank(String str){
-
         return str != null && !str.trim().isEmpty();
     }
 
-
+    private void validateCommentOwner(Comment findComment, Long userId){
+        if(!findComment.getUser().getId().equals(userId)){
+            throw new CustomException(ErrorCode.COMMENT_NOT_OWNED);
+        }
+    }
 }

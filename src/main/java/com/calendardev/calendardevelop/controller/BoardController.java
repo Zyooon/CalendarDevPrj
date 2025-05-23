@@ -51,7 +51,7 @@ public class BoardController {
     }
 
     @PatchMapping("update/{id}")
-    public ResponseEntity<String> updateboard(@PathVariable Long id,
+    public ResponseEntity<String> updateBoard(@PathVariable Long id,
                                             @Valid @RequestBody BoardUpdateRequestDto requestDto,
                                             HttpServletRequest httpServletRequest){
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
