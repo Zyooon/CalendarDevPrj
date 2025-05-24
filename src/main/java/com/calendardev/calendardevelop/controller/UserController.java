@@ -1,6 +1,7 @@
 package com.calendardev.calendardevelop.controller;
 
 import com.calendardev.calendardevelop.common.LoginManager;
+import com.calendardev.calendardevelop.common.ResponseMessege;
 import com.calendardev.calendardevelop.dto.user.*;
 import com.calendardev.calendardevelop.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,23 +29,23 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto requestDto,
+    public ResponseEntity<ResponseMessege> login(@Valid @RequestBody LoginRequestDto requestDto,
                                       HttpServletRequest httpServletRequest){
 
         LoginResponseDto loginResponseDto = userService.login(requestDto);
 
         loginManager.setUserIdToSession(httpServletRequest, loginResponseDto.getId());
 
-        return new ResponseEntity<>("로그인 되었습니다.",HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.LOGIN_SUCCESS ,HttpStatus.OK);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request,
+    public ResponseEntity<ResponseMessege> logout(HttpServletRequest request,
                                          HttpServletResponse response){
 
         loginManager.resetSessionAndCookies(request, response);
 
-        return new ResponseEntity<>("로그아웃 되었습니다.",HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.LOGOUT_SUCCESS,HttpStatus.OK);
     }
 
     @GetMapping
@@ -58,18 +59,18 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseEntity<String> updateUser(@Valid @RequestBody UserUpdateRequestDto requestDto,
+    public ResponseEntity<ResponseMessege> updateUser(@Valid @RequestBody UserUpdateRequestDto requestDto,
                                            HttpServletRequest httpServletRequest){
 
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         userService.updateUser(userId, requestDto);
         
-        return new ResponseEntity<>("유저 정보가 변경되었습니다.",HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.USER_INFO_UPDATED,HttpStatus.OK);
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteUser(@Valid @RequestBody UserDeleteRequestDto requestDto,
+    public ResponseEntity<ResponseMessege> deleteUser(@Valid @RequestBody UserDeleteRequestDto requestDto,
                                            HttpServletRequest httpServletRequest,
                                            HttpServletResponse httpServletResponse){
 
@@ -79,7 +80,7 @@ public class UserController {
 
         loginManager.resetSessionAndCookies(httpServletRequest, httpServletResponse);
 
-        return new ResponseEntity<>("탈퇴 처리되었습니다.",HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.USER_DELETED,HttpStatus.OK);
     }
 
 }

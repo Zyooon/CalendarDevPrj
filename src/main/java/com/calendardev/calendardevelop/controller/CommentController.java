@@ -1,6 +1,7 @@
 package com.calendardev.calendardevelop.controller;
 
 import com.calendardev.calendardevelop.common.LoginManager;
+import com.calendardev.calendardevelop.common.ResponseMessege;
 import com.calendardev.calendardevelop.dto.comment.CommentAddReponseDto;
 import com.calendardev.calendardevelop.dto.comment.CommnetRequestDto;
 import com.calendardev.calendardevelop.service.CommentService;
@@ -33,7 +34,7 @@ public class CommentController {
     }
 
     @PatchMapping("/{commentId}")
-    public ResponseEntity<String> updateComment(@PathVariable Long boardId,
+    public ResponseEntity<ResponseMessege> updateComment(@PathVariable Long boardId,
                                               @PathVariable Long commentId,
                                               @Valid @RequestBody CommnetRequestDto requestDto,
                                               HttpServletRequest httpServletRequest){
@@ -42,12 +43,12 @@ public class CommentController {
 
         commentService.updateComment(commentId, boardId, userId, requestDto);
 
-        return new ResponseEntity<>("댓글이 수정되었습니다.",HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.COMMENT_DELETED,HttpStatus.OK);
 
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<String> deleteComment(@PathVariable Long boardId,
+    public ResponseEntity<ResponseMessege> deleteComment(@PathVariable Long boardId,
                                               @PathVariable Long commentId,
                                               HttpServletRequest httpServletRequest){
 
@@ -55,7 +56,7 @@ public class CommentController {
 
         commentService.deleteComment(commentId, boardId, userId);
 
-        return new ResponseEntity<>("댓글이 삭제되었습니다.",HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.COMMENT_DELETED,HttpStatus.OK);
 
     }
 }

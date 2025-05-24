@@ -1,6 +1,7 @@
 package com.calendardev.calendardevelop.controller;
 
 import com.calendardev.calendardevelop.common.LoginManager;
+import com.calendardev.calendardevelop.common.ResponseMessege;
 import com.calendardev.calendardevelop.dto.board.*;
 import com.calendardev.calendardevelop.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,25 +49,25 @@ public class BoardController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateBoard(@PathVariable Long id,
-                                            @Valid @RequestBody BoardUpdateRequestDto requestDto,
-                                            HttpServletRequest httpServletRequest){
+    public ResponseEntity<ResponseMessege> updateBoard(@PathVariable Long id,
+                                                       @Valid @RequestBody BoardUpdateRequestDto requestDto,
+                                                       HttpServletRequest httpServletRequest){
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         boardService.updateBoard(id, userId, requestDto);
 
-        return new ResponseEntity<>("게시글이 수정되었습니다.",HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.BOARD_UPDATED,HttpStatus.OK);
 
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteBoard(@PathVariable Long id,
+    public ResponseEntity<ResponseMessege> deleteBoard(@PathVariable Long id,
                                             HttpServletRequest httpServletRequest){
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         boardService.deleteBoard(id, userId);
 
-        return new ResponseEntity<>("게시글이 삭제되었습니다.",HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.BOARD_DELETED,HttpStatus.OK);
 
     }
 
