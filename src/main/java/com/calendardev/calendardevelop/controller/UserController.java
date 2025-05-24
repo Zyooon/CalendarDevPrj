@@ -21,6 +21,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<SignUpResponseDto> signUp(@Valid @RequestBody SignUpRequestDto requestDto){
+
         SignUpResponseDto responseDto = userService.signUp(requestDto);
 
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
@@ -29,7 +30,6 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto requestDto,
                                       HttpServletRequest httpServletRequest){
-        loginManager.validLoginStatus(httpServletRequest);
 
         LoginResponseDto loginResponseDto = userService.login(requestDto);
 
