@@ -34,7 +34,7 @@ public class CommentController {
     }
 
     @PatchMapping("/{commentId}")
-    public ResponseEntity<ResponseMessege> updateComment(@PathVariable Long boardId,
+    public ResponseEntity<String> updateComment(@PathVariable Long boardId,
                                               @PathVariable Long commentId,
                                               @Valid @RequestBody CommnetRequestDto requestDto,
                                               HttpServletRequest httpServletRequest){
@@ -43,12 +43,12 @@ public class CommentController {
 
         commentService.updateComment(commentId, boardId, userId, requestDto);
 
-        return new ResponseEntity<>(ResponseMessege.COMMENT_DELETED,HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.COMMENT_DELETED.getMessage(),HttpStatus.OK);
 
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<ResponseMessege> deleteComment(@PathVariable Long boardId,
+    public ResponseEntity<String> deleteComment(@PathVariable Long boardId,
                                               @PathVariable Long commentId,
                                               HttpServletRequest httpServletRequest){
 
@@ -56,7 +56,7 @@ public class CommentController {
 
         commentService.deleteComment(commentId, boardId, userId);
 
-        return new ResponseEntity<>(ResponseMessege.COMMENT_DELETED,HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.COMMENT_DELETED.getMessage(),HttpStatus.OK);
 
     }
 }

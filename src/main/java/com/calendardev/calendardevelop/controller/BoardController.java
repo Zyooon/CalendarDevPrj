@@ -49,25 +49,25 @@ public class BoardController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ResponseMessege> updateBoard(@PathVariable Long id,
+    public ResponseEntity<String> updateBoard(@PathVariable Long id,
                                                        @Valid @RequestBody BoardUpdateRequestDto requestDto,
                                                        HttpServletRequest httpServletRequest){
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         boardService.updateBoard(id, userId, requestDto);
 
-        return new ResponseEntity<>(ResponseMessege.BOARD_UPDATED,HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.BOARD_UPDATED.getMessage(),HttpStatus.OK);
 
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseMessege> deleteBoard(@PathVariable Long id,
+    public ResponseEntity<String> deleteBoard(@PathVariable Long id,
                                             HttpServletRequest httpServletRequest){
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         boardService.deleteBoard(id, userId);
 
-        return new ResponseEntity<>(ResponseMessege.BOARD_DELETED,HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.BOARD_DELETED.getMessage(),HttpStatus.OK);
 
     }
 

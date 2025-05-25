@@ -29,23 +29,23 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseMessege> login(@Valid @RequestBody LoginRequestDto requestDto,
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto requestDto,
                                       HttpServletRequest httpServletRequest){
 
         LoginResponseDto loginResponseDto = userService.login(requestDto);
 
         loginManager.setUserIdToSession(httpServletRequest, loginResponseDto.getId());
 
-        return new ResponseEntity<>(ResponseMessege.LOGIN_SUCCESS ,HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.LOGIN_SUCCESS.getMessage() ,HttpStatus.OK);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ResponseMessege> logout(HttpServletRequest request,
+    public ResponseEntity<String> logout(HttpServletRequest request,
                                          HttpServletResponse response){
 
         loginManager.resetSessionAndCookies(request, response);
 
-        return new ResponseEntity<>(ResponseMessege.LOGOUT_SUCCESS,HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.LOGOUT_SUCCESS.getMessage(),HttpStatus.OK);
     }
 
     @GetMapping
@@ -59,18 +59,18 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseEntity<ResponseMessege> updateUser(@Valid @RequestBody UserUpdateRequestDto requestDto,
+    public ResponseEntity<String> updateUser(@Valid @RequestBody UserUpdateRequestDto requestDto,
                                            HttpServletRequest httpServletRequest){
 
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
         userService.updateUser(userId, requestDto);
         
-        return new ResponseEntity<>(ResponseMessege.USER_INFO_UPDATED,HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.USER_INFO_UPDATED.getMessage(),HttpStatus.OK);
     }
 
     @DeleteMapping
-    public ResponseEntity<ResponseMessege> deleteUser(@Valid @RequestBody UserDeleteRequestDto requestDto,
+    public ResponseEntity<String> deleteUser(@Valid @RequestBody UserDeleteRequestDto requestDto,
                                            HttpServletRequest httpServletRequest,
                                            HttpServletResponse httpServletResponse){
 
@@ -80,7 +80,7 @@ public class UserController {
 
         loginManager.resetSessionAndCookies(httpServletRequest, httpServletResponse);
 
-        return new ResponseEntity<>(ResponseMessege.USER_DELETED,HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessege.USER_DELETED.getMessage(),HttpStatus.OK);
     }
 
 }

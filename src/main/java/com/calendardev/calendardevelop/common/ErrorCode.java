@@ -28,7 +28,12 @@ public enum ErrorCode {
     UNAUTHORIZED_SCHEDULE_ACCESS(HttpStatus.UNAUTHORIZED, "해당 사용자의 일정이 아닙니다."),
 
     // 요청 오류
-    BAD_REQUEST_CONTENT(HttpStatus.CONFLICT, "해당 내용은 추가할 수 없습니다.");
+    BAD_REQUEST_CONTENT(HttpStatus.CONFLICT, "해당 내용은 추가할 수 없습니다."),
+
+    //필터 오류
+    REQUIRED_LOGIN(HttpStatus.BAD_REQUEST, "로그인이 필요합니다."),
+    REQUIRED_LOGOUT(HttpStatus.BAD_REQUEST, "로그인 상태에서는 할 수 없습니다.");
+
 
     private final HttpStatus status;
     private final String message;
