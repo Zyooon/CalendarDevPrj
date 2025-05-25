@@ -1,5 +1,6 @@
-package com.calendardev.calendardevelop.common;
+package com.calendardev.calendardevelop.exception;
 
+import com.calendardev.calendardevelop.enums.ErrorCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

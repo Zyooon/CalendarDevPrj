@@ -1,7 +1,7 @@
 package com.calendardev.calendardevelop.controller;
 
 import com.calendardev.calendardevelop.common.LoginManager;
-import com.calendardev.calendardevelop.common.ResponseMessege;
+import com.calendardev.calendardevelop.enums.ResponseMessege;
 import com.calendardev.calendardevelop.dto.comment.CommentAddReponseDto;
 import com.calendardev.calendardevelop.dto.comment.CommnetRequestDto;
 import com.calendardev.calendardevelop.service.CommentService;

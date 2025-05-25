@@ -1,4 +1,4 @@
-package com.calendardev.calendardevelop.common;
+package com.calendardev.calendardevelop.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

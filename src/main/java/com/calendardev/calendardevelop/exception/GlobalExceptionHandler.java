@@ -1,6 +1,6 @@
-package com.calendardev.calendardevelop.common;
+package com.calendardev.calendardevelop.exception;
 
-import com.calendardev.calendardevelop.dto.common.ExceptionDto;
+import com.calendardev.calendardevelop.common.Const;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler{
     //에러 메세지에 예외 발생 지점 같이 보내준다.
     //클래스명 + 메서드명 + Line 번호
     private String getExceptionOccurredLocation(Throwable e) {
-        if (e == null || e.getStackTrace().length == 0) return "Unknown Location";
+        if (e == null || e.getStackTrace().length == 0) return Const.UNKNOWN_LOCATION;
         StackTraceElement element = e.getStackTrace()[0];
         String className = element.getClassName().substring(element.getClassName().lastIndexOf('.') + 1);
         return className + "." + element.getMethodName() + " :: Line " + element.getLineNumber();

@@ -1,7 +1,7 @@
 package com.calendardev.calendardevelop.service;
 
-import com.calendardev.calendardevelop.common.CustomException;
-import com.calendardev.calendardevelop.common.ErrorCode;
+import com.calendardev.calendardevelop.exception.CustomException;
+import com.calendardev.calendardevelop.enums.ErrorCode;
 import com.calendardev.calendardevelop.dto.comment.CommentAddReponseDto;
 import com.calendardev.calendardevelop.dto.comment.CommnetRequestDto;
 import com.calendardev.calendardevelop.entity.Board;
