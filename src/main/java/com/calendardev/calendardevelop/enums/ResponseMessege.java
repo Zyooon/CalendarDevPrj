@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ResponseMessege {
+    //Response 메세지 관리
 
     BOARD_UPDATED("게시글이 수정되었습니다."),
     BOARD_DELETED("게시글이 삭제되었습니다."),

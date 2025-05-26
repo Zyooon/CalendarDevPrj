@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler{
 
+    //직접 잡는 에러메시지 제외 모든 에러를 ExceptionDto 방식으로 리턴
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionDto> handleAllException(Exception e) {
         String location = getExceptionOccurredLocation(e);

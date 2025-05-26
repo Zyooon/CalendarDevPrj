@@ -36,6 +36,7 @@ public class BoardController {
     @GetMapping
     public ResponseEntity<List<BoardResponseDto>> getPagedBoards(@RequestParam(defaultValue = "1") int page,
                                                                  @RequestParam(defaultValue = "10") int size){
+        //인덱스 0번이 1페이지이지만, 클라이언트에서 요청보낼때 혼란을 방지하기 위해서 Default 값에서 -1로 연산.
         Page<BoardResponseDto> pagedBoardList = boardService.getPagedBoards(page-1, size);
         return new ResponseEntity<>(pagedBoardList.getContent(), HttpStatus.OK);
     }
@@ -44,6 +45,7 @@ public class BoardController {
     public ResponseEntity<BoardDetailResponseDto> getOneBoardDetail(@PathVariable Long id,
                                                                     @RequestParam(defaultValue = "1") int page,
                                                                     @RequestParam(defaultValue = "10") int size){
+        //인덱스 0번이 1페이지이지만, 클라이언트에서 요청보낼때 혼란을 방지하기 위해서 Default 값에서 -1로 연산.
         BoardDetailResponseDto board = boardService.getOneBoardDetail(id, page-1, size);
         return new ResponseEntity<>(board, HttpStatus.OK);
     }

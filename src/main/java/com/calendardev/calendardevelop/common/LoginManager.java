@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 
+//로그인(세션) 관련 일괄 처리
 @Component
 public class LoginManager {
 
@@ -18,7 +19,6 @@ public class LoginManager {
     public boolean isLoggedIn(HttpServletRequest httpRequest){
         HttpSession session = httpRequest.getSession(false);
         return session != null && session.getAttribute(Const.USER_ID) != null;
-
     }
 
     //세션에 유저 ID 저장

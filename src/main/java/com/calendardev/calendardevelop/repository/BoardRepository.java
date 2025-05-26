@@ -14,20 +14,20 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findAllByUserId(Long userId);
 
     @Query("""
-    SELECT new com.calendardev.calendardevelop.dto.board.BoardResponseDto(
-        b.id,
-        b.title,
-        b.contents,
-        u.username,
-        COUNT(c.id) as commentCount,
-        b.createdAt,
-        b.modifiedAt
-    )
-    FROM Board b
-    JOIN b.user u
-    LEFT JOIN Comment c ON c.board = b
-    GROUP BY b.id, b.title, b.contents, u.username, b.createdAt, b.modifiedAt
-    ORDER BY b.createdAt DESC
-""")
+        SELECT new com.calendardev.calendardevelop.dto.board.BoardResponseDto(
+            b.id,
+            b.title,
+            b.contents,
+            u.username,
+            COUNT(c.id) as commentCount,
+            b.createdAt,
+            b.modifiedAt
+        )
+        FROM Board b
+        JOIN b.user u
+        LEFT JOIN Comment c ON c.board = b
+        GROUP BY b.id, b.title, b.contents, u.username, b.createdAt, b.modifiedAt
+        ORDER BY b.createdAt DESC
+    """)
     Page<BoardResponseDto> findAllWithCommentCount(Pageable pageable);
 }
