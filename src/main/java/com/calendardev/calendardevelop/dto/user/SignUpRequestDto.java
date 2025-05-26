@@ -1,5 +1,6 @@
 package com.calendardev.calendardevelop.dto.user;
 
+import com.calendardev.calendardevelop.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -22,5 +23,9 @@ public class SignUpRequestDto {
         this.username = username;
         this.email = email;
         this.password = password;
+    }
+
+    public User toEntity(String encodedPassword){
+        return new User(username, email, encodedPassword);
     }
 }

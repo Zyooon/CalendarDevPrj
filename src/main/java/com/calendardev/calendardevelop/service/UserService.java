@@ -32,7 +32,7 @@ public class UserService {
 
         String encodedPassword = passwordManager.encodePassword(requestDto.getPassword());
 
-        User user = new User(requestDto.getUsername(), requestDto.getEmail(), encodedPassword);
+        User user = requestDto.toEntity(encodedPassword);
 
         return new SignUpResponseDto(saveUserAndGetIdOrThrow(user));
 

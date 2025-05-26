@@ -35,12 +35,14 @@ public class BoardService {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Board board = new Board(requestDto.getTitle(), requestDto.getContents(), user);
+        //Board board = new Board(requestDto.getTitle(), requestDto.getContents(), user);
 
-        return new BoardCreateResponseDto(saveBoardByUserIdOrElseThrow(board));
+        Board board = requestDto.toEntity(user);
+
+        return new BoardCreateResponseDto(saveBoard(board));
     }
 
-    private Long saveBoardByUserIdOrElseThrow(Board board) {
+    private Long saveBoard(Board board) {
         try{
             return boardRepository.save(board).getId();
         }catch (DataIntegrityViolationException e) {

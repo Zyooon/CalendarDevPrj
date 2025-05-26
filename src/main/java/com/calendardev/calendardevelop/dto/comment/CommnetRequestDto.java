@@ -1,5 +1,8 @@
 package com.calendardev.calendardevelop.dto.comment;
 
+import com.calendardev.calendardevelop.entity.Board;
+import com.calendardev.calendardevelop.entity.Comment;
+import com.calendardev.calendardevelop.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -13,5 +16,9 @@ public class CommnetRequestDto {
 
     public CommnetRequestDto(String contents) {
         this.contents = contents;
+    }
+
+    public Comment toEntity(User user, Board board ) {
+        return new Comment(contents, user, board);
     }
 }

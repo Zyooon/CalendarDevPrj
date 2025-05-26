@@ -1,5 +1,7 @@
 package com.calendardev.calendardevelop.dto.board;
 
+import com.calendardev.calendardevelop.entity.Board;
+import com.calendardev.calendardevelop.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -20,5 +22,9 @@ public class BoardCreateRequestDto {
         this.userId = userId;
         this.title = title;
         this.contents = contents;
+    }
+
+    public Board toEntity(User user) {
+        return new Board(title, contents, user);
     }
 }

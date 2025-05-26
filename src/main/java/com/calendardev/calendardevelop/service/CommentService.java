@@ -32,7 +32,7 @@ public class CommentService {
         Board findBoard = boardRepository.findById(boardId).
                 orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-        Comment comment = new Comment(requestDto.getContents(), findUser, findBoard);
+        Comment comment = requestDto.toEntity(findUser, findBoard);
 
         Long commentId = commentRepository.save(comment).getId();
 
