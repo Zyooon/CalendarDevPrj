@@ -18,8 +18,7 @@ public class WhitelistManager {
     private static final String[] PUBLIC_URLS = {
             "/calendar/users/signup",
             "/calendar/users/login",
-            "/calendar/board",
-            "/calendar/board/detail/*"
+            "/calendar/boards"
     };
 
     //회원가입, 로그인 기능은 로그아웃 상태에서만 진입 가능 (로그인 상태는 진입 불가)
@@ -29,15 +28,23 @@ public class WhitelistManager {
     };
 
     //로그인 상태와 화이트리스트 판별하여 조건에 따라 BadRequest 날려준다.
-    public boolean validateWhitelistAccess(boolean isLoggedIn, String requestURI, HttpServletResponse httpResponse) throws IOException {
+    public boolean validateWhitelistAccess(boolean isLoggedIn, String requestURI, String httpMethod, HttpServletResponse httpResponse) throws IOException {
         if (isLoggedIn && isWhitelistedUrl(LOGOUT_ONLY_URLS, requestURI)) {
             exceptionResponse.writeExceptionResponse(ErrorCode.REQUIRED_LOGOUT, httpResponse);
             return false;
         }
-
-        if (!isLoggedIn && !isWhitelistedUrl(PUBLIC_URLS, requestURI)) {
-            exceptionResponse.writeExceptionResponse(ErrorCode.REQUIRED_LOGIN, httpResponse);
-            return false;
+    
+        //Get 방식의 조회만 필터 제외하고, 다른 방식은(수정,삭제 등) 필터에 걸리도록 수정 
+        if (!isLoggedIn) {
+            if (requestURI.startsWith("/calendar/boards/")) {
+                if (!"GET".equalsIgnoreCase(httpMethod)) {
+                    exceptionResponse.writeExceptionResponse(ErrorCode.REQUIRED_LOGIN, httpResponse);
+                    return false;
+                }
+            } else if (!isWhitelistedUrl(PUBLIC_URLS, requestURI)) {
+                exceptionResponse.writeExceptionResponse(ErrorCode.REQUIRED_LOGIN, httpResponse);
+                return false;
+            }
         }
         return true;
     }

@@ -21,9 +21,10 @@ public class LoginFilter implements Filter {
 
         boolean isLoggedIn = loginManager.isLoggedIn(httpRequest);
         String requestURI = httpRequest.getRequestURI();
+        String httpMethod = httpRequest.getMethod();
 
         //화이트 리스트 판별. 리턴 시 예외처리
-        if(!whitelistManager.validateWhitelistAccess(isLoggedIn, requestURI, httpResponse)) return;
+        if(!whitelistManager.validateWhitelistAccess(isLoggedIn, requestURI,httpMethod, httpResponse)) return;
         
         //세션 확인 후 다음 Servlet 진행
         chain.doFilter(request, response);
