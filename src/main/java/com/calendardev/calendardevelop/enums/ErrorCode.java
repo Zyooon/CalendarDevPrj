@@ -16,9 +16,10 @@ public enum ErrorCode {
     ALREADY_LOGGED_IN(HttpStatus.CONFLICT, "이미 로그인된 사용자입니다."),
 
     // 게시글 관련
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
-    POST_NOT_OWNED(HttpStatus.BAD_REQUEST, "본인의 게시글만 삭제할 수 있습니다."),
-    POST_NOT_EXISTING(HttpStatus.NO_CONTENT, "게시글이 존재하지 않습니다."),
+    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
+    BOARD_NOT_OWNED(HttpStatus.BAD_REQUEST, "본인의 게시글만 삭제할 수 있습니다."),
+    BOARD_NOT_EXISTING(HttpStatus.NO_CONTENT, "게시글이 존재하지 않습니다."),
+    POST_NOT_CHANGE(HttpStatus.BAD_REQUEST, "변경할 내용을 입력해야 합니다."),
 
     // 댓글 관련
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."),

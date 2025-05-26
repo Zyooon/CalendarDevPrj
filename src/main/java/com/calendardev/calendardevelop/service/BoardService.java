@@ -1,12 +1,12 @@
 package com.calendardev.calendardevelop.service;
 
-import com.calendardev.calendardevelop.exception.CustomException;
-import com.calendardev.calendardevelop.enums.ErrorCode;
 import com.calendardev.calendardevelop.dto.board.*;
 import com.calendardev.calendardevelop.dto.comment.CommentResponseDto;
 import com.calendardev.calendardevelop.entity.Board;
 import com.calendardev.calendardevelop.entity.Comment;
 import com.calendardev.calendardevelop.entity.User;
+import com.calendardev.calendardevelop.enums.ErrorCode;
+import com.calendardev.calendardevelop.exception.CustomException;
 import com.calendardev.calendardevelop.repository.BoardRepository;
 import com.calendardev.calendardevelop.repository.CommentRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
@@ -62,7 +62,7 @@ public class BoardService {
     public BoardDetailResponseDto getOneBoardDetail(Long boardId, int page, int size) {
 
         Board findBoard = boardRepository.findById(boardId).
-                orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
+                orElseThrow(()-> new CustomException(ErrorCode.BOARD_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(page, size);
 
@@ -82,20 +82,30 @@ public class BoardService {
     @Transactional
     public void updateBoard(Long id, Long userId, BoardUpdateRequestDto requestDto) {
 
+        validateBothTitleAndContents(requestDto);
+
         Board findBoard = boardRepository.findById(id)
-                .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
+                .orElseThrow(()-> new CustomException(ErrorCode.BOARD_NOT_FOUND));
 
         validateBoardOwner(findBoard, userId);
 
         updateTitleAndContents(findBoard, requestDto);
     }
 
+    //제목과 게시글 모두 공백일 경우 예외처리
+    private void validateBothTitleAndContents(BoardUpdateRequestDto requestDto) {
+        boolean isEmptyTitle = Strings.isBlank(requestDto.getTitle());
+        boolean isEmptyContents = Strings.isBlank(requestDto.getContents());
 
+        if(isEmptyTitle && isEmptyContents){
+            throw new CustomException(ErrorCode.POST_NOT_CHANGE);
+        }
+    }
 
     @Transactional
     public void deleteBoard(Long boardId, Long userId) {
         Board findBoard = boardRepository.findById(boardId)
-                .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
+                .orElseThrow(()-> new CustomException(ErrorCode.BOARD_NOT_FOUND));
 
         validateBoardOwner(findBoard, userId);
 
@@ -106,7 +116,7 @@ public class BoardService {
 
     private void validateBoardOwner(Board findBoard, Long userId){
         if(!findBoard.getUser().getId().equals(userId)){
-            throw new CustomException(ErrorCode.POST_NOT_OWNED);
+            throw new CustomException(ErrorCode.BOARD_NOT_OWNED);
         }
     }
 

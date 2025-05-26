@@ -30,7 +30,7 @@ public class CommentService {
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Board findBoard = boardRepository.findById(boardId).
-                orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
+                orElseThrow(()-> new CustomException(ErrorCode.BOARD_NOT_FOUND));
 
         Comment comment = requestDto.toEntity(findUser, findBoard);
 

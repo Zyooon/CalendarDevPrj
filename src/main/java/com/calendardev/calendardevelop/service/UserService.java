@@ -1,12 +1,12 @@
 package com.calendardev.calendardevelop.service;
 
-import com.calendardev.calendardevelop.exception.CustomException;
-import com.calendardev.calendardevelop.enums.ErrorCode;
 import com.calendardev.calendardevelop.common.PasswordManager;
 import com.calendardev.calendardevelop.dto.user.*;
 import com.calendardev.calendardevelop.entity.Board;
 import com.calendardev.calendardevelop.entity.Comment;
 import com.calendardev.calendardevelop.entity.User;
+import com.calendardev.calendardevelop.enums.ErrorCode;
+import com.calendardev.calendardevelop.exception.CustomException;
 import com.calendardev.calendardevelop.repository.BoardRepository;
 import com.calendardev.calendardevelop.repository.CommentRepository;
 import com.calendardev.calendardevelop.repository.UserRepository;
@@ -122,5 +122,4 @@ public class UserService {
             commentRepository.deleteAll(commentList);
         }
     }
-
 }
