@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@JsonPropertyOrder({ "id", "userId","title", "contents","createdAt","modifiedAt","comments" })
+@JsonPropertyOrder({ "id", "username","title", "contents","createdAt","modifiedAt","comments" })
 public class BoardDetailResponseDto {
     private final Long id;
 
-    private final Long userId;
+    private final String username;
 
     private final String title;
 
@@ -27,7 +27,7 @@ public class BoardDetailResponseDto {
 
     public BoardDetailResponseDto(Board board, List<CommentResponseDto> comments) {
         this.id = board.getId();
-        this.userId = board.getUser().getId();
+        this.username = board.getUser().getUsername();
         this.title = board.getTitle();
         this.contents = board.getContents();
         this.createdAt = board.getCreatedAt();

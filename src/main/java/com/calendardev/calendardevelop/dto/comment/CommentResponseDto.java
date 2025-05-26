@@ -10,7 +10,7 @@ public class CommentResponseDto {
 
     private final Long id;
 
-    private final Long userId;
+    private final String username;
     
     private final String contents;
 
@@ -20,7 +20,7 @@ public class CommentResponseDto {
 
     public CommentResponseDto(Comment comment){
         this.id = comment.getId();
-        this.userId = comment.getUser().getId();
+        this.username = comment.getUser().getUsername();
         this.contents = comment.getContents();
         this.createdAt = comment.getCreatedAt();
         this.modifiedAt = comment.getModifiedAt();
