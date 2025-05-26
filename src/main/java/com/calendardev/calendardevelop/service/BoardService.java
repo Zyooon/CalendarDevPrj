@@ -54,9 +54,7 @@ public class BoardService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Board> pagedBoardList = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
-
-        return pagedBoardList.map(BoardResponseDto::new);
+        return boardRepository.findAllWithCommentCount(pageable);
     }
 
     public BoardDetailResponseDto getOneBoardDetail(Long boardId, int page, int size) {
