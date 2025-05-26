@@ -3,10 +3,10 @@ package com.calendardev.calendardevelop.dto.board;
 import lombok.Getter;
 
 @Getter
-public class BoardAddResponseDto {
+public class BoardCreateResponseDto {
     private final Long id;
 
-    public BoardAddResponseDto(Long id) {
+    public BoardCreateResponseDto(Long id) {
         this.id = id;
     }
 }

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
-public class BoardAddRequestDto {
+public class BoardCreateRequestDto {
     private final Long userId;
 
     @NotBlank(message = "제목을 입력해주세요.")
@@ -16,7 +16,7 @@ public class BoardAddRequestDto {
     @Size(max = 200, message = "내용은 200자 이내여야 합니다.")
     private final String contents;
 
-    public BoardAddRequestDto(Long userId, String title, String contents) {
+    public BoardCreateRequestDto(Long userId, String title, String contents) {
         this.userId = userId;
         this.title = title;
         this.contents = contents;

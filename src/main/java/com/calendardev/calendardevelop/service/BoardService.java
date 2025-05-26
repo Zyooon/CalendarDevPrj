@@ -30,14 +30,14 @@ public class BoardService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public BoardAddResponseDto addOneBoard(Long userId, BoardAddRequestDto requestDto) {
+    public BoardCreateResponseDto createBoard(Long userId, BoardCreateRequestDto requestDto) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Board board = new Board(requestDto.getTitle(), requestDto.getContents(), user);
 
-        return new BoardAddResponseDto(saveBoardByUserIdOrElseThrow(board));
+        return new BoardCreateResponseDto(saveBoardByUserIdOrElseThrow(board));
     }
 
     private Long saveBoardByUserIdOrElseThrow(Board board) {

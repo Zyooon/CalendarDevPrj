@@ -3,10 +3,10 @@ package com.calendardev.calendardevelop.dto.comment;
 import lombok.Getter;
 
 @Getter
-public class CommentAddResponseDto {
+public class CommentCreateResponseDto {
     private final Long id;
 
-    public CommentAddResponseDto(Long id) {
+    public CommentCreateResponseDto(Long id) {
         this.id = id;
     }
 }

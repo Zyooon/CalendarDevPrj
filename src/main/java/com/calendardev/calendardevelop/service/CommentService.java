@@ -2,7 +2,7 @@ package com.calendardev.calendardevelop.service;
 
 import com.calendardev.calendardevelop.exception.CustomException;
 import com.calendardev.calendardevelop.enums.ErrorCode;
-import com.calendardev.calendardevelop.dto.comment.CommentAddResponseDto;
+import com.calendardev.calendardevelop.dto.comment.CommentCreateResponseDto;
 import com.calendardev.calendardevelop.dto.comment.CommnetRequestDto;
 import com.calendardev.calendardevelop.entity.Board;
 import com.calendardev.calendardevelop.entity.Comment;
@@ -24,7 +24,7 @@ public class CommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CommentAddResponseDto addComment(Long boardId, Long userId, CommnetRequestDto requestDto) {
+    public CommentCreateResponseDto createComment(Long boardId, Long userId, CommnetRequestDto requestDto) {
 
         User findUser = userRepository.findById(userId)
                 .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -36,7 +36,7 @@ public class CommentService {
 
         Long commentId = commentRepository.save(comment).getId();
 
-        return new CommentAddResponseDto(commentId);
+        return new CommentCreateResponseDto(commentId);
     }
 
     @Transactional

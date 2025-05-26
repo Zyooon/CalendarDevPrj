@@ -2,7 +2,7 @@ package com.calendardev.calendardevelop.controller;
 
 import com.calendardev.calendardevelop.common.LoginManager;
 import com.calendardev.calendardevelop.enums.ResponseMessege;
-import com.calendardev.calendardevelop.dto.comment.CommentAddResponseDto;
+import com.calendardev.calendardevelop.dto.comment.CommentCreateResponseDto;
 import com.calendardev.calendardevelop.dto.comment.CommnetRequestDto;
 import com.calendardev.calendardevelop.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,13 +21,13 @@ public class CommentController {
     private final LoginManager loginManager;
 
     @PostMapping
-    public ResponseEntity<CommentAddResponseDto> addComment(@PathVariable Long boardId,
-                                                            @Valid @RequestBody CommnetRequestDto requestDto,
-                                                            HttpServletRequest httpServletRequest){
+    public ResponseEntity<CommentCreateResponseDto> createComment(@PathVariable Long boardId,
+                                                                  @Valid @RequestBody CommnetRequestDto requestDto,
+                                                                  HttpServletRequest httpServletRequest){
 
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
-        CommentAddResponseDto responseDto = commentService.addComment(boardId, userId, requestDto);
+        CommentCreateResponseDto responseDto = commentService.createComment(boardId, userId, requestDto);
 
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
 

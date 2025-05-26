@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@JsonPropertyOrder({ "id", "username","title", "contents","createdAt","modifiedAt","comments" })
+@JsonPropertyOrder({ "id", "username","title", "contents","createdAt","modifiedAt","comments" }) //반환 시 순서 유지
 public class BoardDetailResponseDto {
     private final Long id;
 

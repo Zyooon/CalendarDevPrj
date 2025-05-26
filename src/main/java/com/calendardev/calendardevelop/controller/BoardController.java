@@ -23,12 +23,12 @@ public class BoardController {
     private final LoginManager loginManager;
 
     @PostMapping("/write")
-    public ResponseEntity<BoardAddResponseDto> addOneBoard(@Valid @RequestBody BoardAddRequestDto requestDto,
-                                                           HttpServletRequest httpServletRequest){
+    public ResponseEntity<BoardCreateResponseDto> createBoard(@Valid @RequestBody BoardCreateRequestDto requestDto,
+                                                              HttpServletRequest httpServletRequest){
 
         Long userId = loginManager.getUserIdFromSession(httpServletRequest);
 
-        BoardAddResponseDto responseDto = boardService.addOneBoard(userId, requestDto);
+        BoardCreateResponseDto responseDto = boardService.createBoard(userId, requestDto);
 
         return new ResponseEntity<>(responseDto ,HttpStatus.CREATED);
     }
