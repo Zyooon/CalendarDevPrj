@@ -28,7 +28,7 @@ public class WhitelistManager {
             "/calendar/users/login"
     };
 
-    //로그인 상태와 화이트리스트 판별하여 조건에 따라 BadRequest 날려준다.
+    //로그인 상태와 화이트리스트 판별하여 조건에 따라 예외처리.
     public boolean validateWhitelistAccess(boolean isLoggedIn, String requestURI, String httpMethod, HttpServletResponse httpResponse) throws IOException {
         if (isLoggedIn && isWhitelistedUri(LOGOUT_ONLY_URIS, requestURI)) {
             exceptionResponse.writeExceptionResponse(ErrorCode.REQUIRED_LOGOUT, httpResponse);
@@ -38,7 +38,7 @@ public class WhitelistManager {
         //Get 방식의 조회만 필터 제외하고, 다른 방식은(수정,삭제 등) 필터에 걸리도록 수정 
         if (!isLoggedIn) {
             if (requestURI.startsWith("/calendar/boards/")) {
-                if (!"GET".equalsIgnoreCase(httpMethod)) {
+                if (!"GET".equalsIgnoreCase(httpMethod)) { //대소문자 구분없이 판단
                     exceptionResponse.writeExceptionResponse(ErrorCode.REQUIRED_LOGIN, httpResponse);
                     return false;
                 }

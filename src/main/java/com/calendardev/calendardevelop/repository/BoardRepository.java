@@ -13,6 +13,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     List<Board> findAllByUserId(Long userId);
 
+    //JPQL 에서는 import 구문이 없기 때문에, SELECT new 에서 클래스 사용 시에는 항상 패키지명을 포함한 전체 경로를 적어야 한다.
     @Query("""
         SELECT new com.calendardev.calendardevelop.dto.board.BoardResponseDto(
             b.id,
